@@ -24,6 +24,7 @@
 #include <system_ability.h>
 #include <window_manager_service_handler_stub.h>
 #include <transaction/rs_interfaces.h>
+#include "atomic_map.h"
 #include "display_change_listener.h"
 #include "drag_controller.h"
 #include "freeze_controller.h"
@@ -127,7 +128,7 @@ private:
     void ConfigureWindowManagerService();
 
     static inline SingletonDelegator<WindowManagerService> delegator;
-    std::map<uint32_t, uint32_t> accessTokenIdMaps_;
+    AtomicMap<uint32_t, uint32_t> accessTokenIdMaps_;
     sptr<WindowRoot> windowRoot_;
     sptr<WindowController> windowController_;
     sptr<InputWindowMonitor> inputWindowMonitor_;
