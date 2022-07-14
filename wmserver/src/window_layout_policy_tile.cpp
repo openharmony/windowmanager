@@ -121,15 +121,32 @@ bool WindowLayoutPolicyTile::IsTileRectSatisfiedWithSizeLimits(const sptr<Window
     if (!WindowHelper::IsMainWindow(node->GetWindowType())) {
         return true;
     }
-    UpdateWindowSizeLimits(node);
     const auto& displayId = node->GetDisplayId();
+    auto& foregroundNodes = foregroundNodesMap_[displayId];
+    auto num = foregroundNodes.size();
+    if (num > maxTileWinNumMap_[displayId]) {
+        return false;
+    }
+
+    // update window size limits
+    UpdateWindowSizeLimits(node);
+
+    // find if node already exits in foreground nodes map
+    auto iter = std::find_if(foregroundNodes.begin(), foregroundNodes.end(),
+                             [node](sptr<WindowNode> foregroundNode) {
+                                 return foregroundNode->GetWindowId() == node->GetWindowId();
+                             });
+    if (iter != foregroundNodes.end()) {
+        return true;
+    }
+
     const auto& presetRects = presetRectsMap_[displayId];
     Rect tileRect;
     // if size of foreground nodes is equal to or more than max tile window number
-    if (foregroundNodesMap_[displayId].size() >= maxTileWinNumMap_[displayId]) {
-        tileRect = *(presetRects[foregroundNodesMap_[displayId].size() - 1].begin());
+    if (num == maxTileWinNumMap_[displayId]) {
+        tileRect = *(presetRects[num - 1].begin());
     } else {  // if size of foreground nodes is less than max tile window number
-        tileRect = *(presetRects[foregroundNodesMap_[displayId].size()].begin());
+        tileRect = *(presetRects[num].begin());
     }
     WLOGFI("id %{public}u, tileRect: [%{public}d %{public}d %{public}u %{public}u]",
         node->GetWindowId(), tileRect.posX_, tileRect.posY_, tileRect.width_, tileRect.height_);
