@@ -53,7 +53,7 @@ public:
                               const std::map<DisplayId, Rect>& displayRectMap,
                               DisplayStateChangeType type);
     sptr<WindowPair> GetWindowPairByDisplayId(DisplayId displayId);
-    void SetInitalDividerRect(DisplayId displayId, const Rect& rect);
+    void SetDividerRect(DisplayId displayId, const Rect& rect);
 
     DisplayGroupWindowTree displayGroupWindowTree_;
     std::map<DisplayId, SysBarNodeMap> sysBarNodeMaps_;

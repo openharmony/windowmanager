@@ -98,7 +98,7 @@ void WindowLayoutPolicy::UpdateDisplayGroupRect()
         displayGroupRect_.posX_, displayGroupRect_.posY_, displayGroupRect_.width_, displayGroupRect_.height_);
 }
 
-void WindowLayoutPolicy::UpdateDisplayGroupLimitRect_()
+void WindowLayoutPolicy::UpdateDisplayGroupLimitRect()
 {
     auto firstDisplayLimitRect = limitRectMap_.begin()->second;
     Rect newDisplayGroupLimitRect = { firstDisplayLimitRect.posX_, firstDisplayLimitRect.posY_, 0, 0 };
@@ -324,7 +324,7 @@ void WindowLayoutPolicy::LayoutWindowNode(const sptr<WindowNode>& node)
         UpdateLayoutRect(node);
         if (avoidTypes_.find(node->GetWindowType()) != avoidTypes_.end()) {
             UpdateLimitRect(node, limitRectMap_[node->GetDisplayId()]);
-            UpdateDisplayGroupLimitRect_();
+            UpdateDisplayGroupLimitRect();
         }
     }
     for (auto& childNode : node->children_) {
@@ -977,7 +977,7 @@ void WindowLayoutPolicy::SetSplitRatioConfig(const SplitRatioConfig& splitRatioC
     splitRatioConfig_ = splitRatioConfig;
 }
 
-Rect WindowLayoutPolicy::GetInitalDividerRect(DisplayId displayId) const
+Rect WindowLayoutPolicy::GetDividerRect(DisplayId displayId) const
 {
     return INVALID_EMPTY_RECT;
 }

@@ -52,7 +52,7 @@ public:
     virtual void UpdateWindowNode(const sptr<WindowNode>& node, bool isAddWindow = false);
     virtual void UpdateLayoutRect(const sptr<WindowNode>& node) = 0;
     virtual void SetSplitDividerWindowRects(std::map<DisplayId, Rect> dividerWindowRects) {};
-    virtual Rect GetInitalDividerRect(DisplayId displayId) const;
+    virtual Rect GetDividerRect(DisplayId displayId) const;
     virtual std::vector<int32_t> GetExitSplitPoints(DisplayId displayId) const;
     float GetVirtualPixelRatio(DisplayId displayId) const;
     void UpdateClientRectAndResetReason(const sptr<WindowNode>& node, const Rect& lastLayoutRect, const Rect& winRect);
@@ -81,7 +81,7 @@ protected:
         const Rect& oriDisplayRect, const Rect& newDisplayRect);
     void LimitWindowToBottomRightCorner(const sptr<WindowNode>& node);
     void UpdateDisplayGroupRect();
-    void UpdateDisplayGroupLimitRect_();
+    void UpdateDisplayGroupLimitRect();
     void UpdateMultiDisplayFlag();
     void PostProcessWhenDisplayChange();
     void UpdateDisplayRectAndDisplayGroupInfo(const std::map<DisplayId, Rect>& displayRectMap);

@@ -335,7 +335,7 @@ void WindowPair::UpdateWindowPairStatus()
         prevStatus == WindowPairStatus::STATUS_SINGLE_SECONDARY || prevStatus == WindowPairStatus::STATUS_EMPTY) &&
         status_ == WindowPairStatus::STATUS_PAIRING) {
         // create divider
-        WindowInnerManager::GetInstance().CreateInnerWindow("dialog_divider_ui", displayId_, initalDividerRect_,
+        WindowInnerManager::GetInstance().CreateInnerWindow("dialog_divider_ui", displayId_, dividerRect_,
             WindowType::WINDOW_TYPE_DOCK_SLICE, WindowMode::WINDOW_MODE_FLOATING);
     } else if ((prevStatus == WindowPairStatus::STATUS_PAIRED_DONE || prevStatus == WindowPairStatus::STATUS_PAIRING) &&
         (status_ != WindowPairStatus::STATUS_PAIRED_DONE && status_ != WindowPairStatus::STATUS_PAIRING)) {
@@ -453,9 +453,24 @@ void WindowPair::HandleRemoveWindow(sptr<WindowNode>& node)
     }
 }
 
-void WindowPair::SetInitalDividerRect(const Rect& rect)
+void WindowPair::RotateDividerWindow(const Rect& rect)
 {
-    initalDividerRect_ = rect;
+    dividerRect_ = rect;
+    // rotate divider when display orientation changed
+    if (divider_ == nullptr) {
+        WLOGE("Rotate divider failed because divider is null");
+        return;
+    }
+    WLOGFD("Rotate divider when display rotate rect:[%{public}d, %{public}d, %{public}u, %{public}u]",
+        rect.posX_, rect.posY_, rect.width_, rect.height_);
+    // update divider dialog window
+    WindowInnerManager::GetInstance().UpdateInnerWindow(displayId_, WindowType::WINDOW_TYPE_DOCK_SLICE,
+        rect.width_, rect.height_);
+}
+
+void WindowPair::SetDividerRect(const Rect& rect)
+{
+    dividerRect_ = rect;
 }
 } // namespace Rosen
 } // namespace OHOS

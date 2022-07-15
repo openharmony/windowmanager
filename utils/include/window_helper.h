@@ -120,6 +120,11 @@ public:
         return (r.posX_ == 0 && r.posY_ == 0 && r.width_ == 0 && r.height_ == 0);
     }
 
+    static inline bool IsLandscapeRect(const Rect& r)
+    {
+        return r.width_ > r.height_;
+    }
+
     static inline bool HasOverlap(const Rect& r1, const Rect& r2)
     {
         int32_t r1XEnd = r1.posX_ + r1.width_;

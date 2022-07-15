@@ -102,7 +102,7 @@ void WindowLayoutPolicyCascade::LayoutWindowNode(const sptr<WindowNode>& node)
             UpdateSplitLimitRect(limitRectMap_[displayId], primaryLimitRect);
             UpdateSplitLimitRect(limitRectMap_[displayId], secondaryLimitRect);
             UpdateSplitRatioPoints(displayId);
-            UpdateDisplayGroupLimitRect_();
+            UpdateDisplayGroupLimitRect();
             WLOGFI("priLimitRect: %{public}d %{public}d %{public}u %{public}u, " \
                 "secLimitRect: %{public}d %{public}d %{public}u %{public}u", primaryLimitRect.posX_,
                 primaryLimitRect.posY_, primaryLimitRect.width_, primaryLimitRect.height_, secondaryLimitRect.posX_,
@@ -267,10 +267,21 @@ void WindowLayoutPolicyCascade::ApplyWindowRectConstraints(const sptr<WindowNode
                 UpdateDockSlicePosition(displayId, winRect.posY_);
             }
         }
+        /*
+         * use the layout orientation of the window and the layout orientation of the screen
+         * to determine whether the screen is rotating
+         */
+        if ((!WindowHelper::IsLandscapeRect(winRect) && IsVerticalDisplay(displayId)) ||
+            (WindowHelper::IsLandscapeRect(winRect) && !IsVerticalDisplay(displayId))) {
+            // resets the rect of the divider window when the screen is rotating
+            WLOGFD("Reset divider when display rotate rect:[%{public}d, %{public}d, %{public}u, %{public}u]",
+                winRect.posX_, winRect.posY_, winRect.width_, winRect.height_);
+            winRect = cascadeRectsMap_[displayId].dividerRect_;
+            node->SetRequestRect(winRect);
+        }
     }
     LimitFloatingWindowSize(node, displayGroupInfo_->GetDisplayRect(node->GetDisplayId()), winRect);
     LimitMainFloatingWindowPosition(node, winRect);
-
     WLOGFI("After apply constraints winRect:[%{public}d, %{public}d, %{public}u, %{public}u]",
         winRect.posX_, winRect.posY_, winRect.width_, winRect.height_);
 }
@@ -600,7 +611,7 @@ void WindowLayoutPolicyCascade::SetCascadeRect(const sptr<WindowNode>& node)
     node->SetRequestRect(rect);
     node->SetDecoStatus(true);
 }
-Rect WindowLayoutPolicyCascade::GetInitalDividerRect(DisplayId displayId) const
+Rect WindowLayoutPolicyCascade::GetDividerRect(DisplayId displayId) const
 {
     Rect dividerRect = {0, 0, 0, 0};
     if (cascadeRectsMap_.find(displayId) != std::end(cascadeRectsMap_)) {

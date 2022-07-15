@@ -16,7 +16,7 @@
  -->
 
 <div class="container" style="background-color: {{ backgroundColor }}">
-    <button class="divider-button" ondoubleclick="onExchangeDoubleClick"
-            click-effect="spring-small">
+    <button class="divider-button" ondoubleclick="onDoubleClick" click-effect="spring-small"
+        style="width: {{buttonWidth}}; height: {{buttonHeight}}; flex-direction: {{flexDirection}};">
     </button>
 </div>

@@ -15,9 +15,30 @@
 
 export default {
     data: {
-        backgroundColor:"black"
+        tag : "system.window.divider:",
+        backgroundColor:"black",
+        buttonWidth:"",
+        buttonHeight:"",
+        flexDirection:"",
     },
-    onExchangeDoubleClick() {
-        console.info('double click exchange');
+    onInit() {
+        console.info(this.tag + "on init")
+    },
+    onDoubleClick() {
+        console.info(this.tag + 'on double click');
+    },
+    onDialogUpdated(param) {
+        /* update view style */
+        console.info(this.tag + 'on dialog update param width: ' + param.width);
+        console.info(this.tag + 'on dialog update param height: ' + param.height);
+        if (param.width < param.height) {
+            this.buttonWidth = "90%"
+            this.buttonHeight = "10%"
+            this.flexDirection = "row"
+        } else {
+            this.buttonWidth = "10%"
+            this.buttonHeight = "90%"
+            this.flexDirection = "column"
+        }
     }
 }

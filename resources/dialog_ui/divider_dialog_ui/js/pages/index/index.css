@@ -23,13 +23,13 @@
 }
 
 .divider-button {
-    flex-direction: row;
     justify-content: space-around;
     background-color: whitesmoke;
 }
 
 @media screen and (device-type: phone) or (orientation: portrait) {
     .divider-button {
+        flex-direction: column;
         width: 10%;
         height: 90%;
     }
@@ -37,6 +37,7 @@
 
 @media screen and (device-type: tablet) or (orientation: landscape) {
     .divider-button {
+        flex-direction: row;
         width: 90%;
         height: 10%;
     }
