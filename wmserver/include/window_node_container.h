@@ -119,7 +119,7 @@ private:
     sptr<WindowNode> FindWindowNodeById(uint32_t id) const;
     void UpdateFocusStatus(uint32_t id, bool focused) const;
     void UpdateActiveStatus(uint32_t id, bool isActive) const;
-
+    void RemoveNodeFromRSTree(sptr<WindowNode>& node);
     void NotifyIfAvoidAreaChanged(const sptr<WindowNode>& node, const AvoidControlType avoidType) const;
     void NotifyIfSystemBarTintChanged(DisplayId displayId) const;
     void NotifyIfSystemBarRegionChanged(DisplayId displayId) const;

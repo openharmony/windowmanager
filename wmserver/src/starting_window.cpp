@@ -108,16 +108,16 @@ void StartingWindow::DrawStartingWindow(sptr<WindowNode>& node,
 {
     // using snapshot to support hot start since node destroy when hide
     HITRACE_METER_FMT(HITRACE_TAG_WINDOW_MANAGER, "wms:DrawStartingWindow(%u)", node->GetWindowId());
+    Rect rect = node->GetWindowRect();
+    if (RemoteAnimation::CheckAnimationController() && node->leashWinSurfaceNode_) {
+        node->leashWinSurfaceNode_->SetBounds(rect.posX_, rect.posY_, -1, -1);
+    }
     if (!isColdStart) {
         return;
     }
     if (node->startingWinSurfaceNode_ == nullptr) {
         WLOGFE("no starting Window SurfaceNode!");
         return;
-    }
-    Rect rect = node->GetWindowRect();
-    if (RemoteAnimation::CheckAnimationController() && node->leashWinSurfaceNode_) {
-        node->leashWinSurfaceNode_->SetBounds(rect.posX_, rect.posY_, -1, -1);
     }
     if (pixelMap == nullptr) {
         SurfaceDraw::DrawColor(node->startingWinSurfaceNode_, rect.width_, rect.height_, bkgColor);

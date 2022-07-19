@@ -138,14 +138,14 @@ WMError WindowController::NotifyWindowTransition(sptr<WindowTransitionInfo>& src
             if (dstNode->GetWindowMode() == WindowMode::WINDOW_MODE_FULLSCREEN) {
                 windowRoot_->MinimizeStructuredAppWindowsExceptSelf(dstNode); // avoid split/float mode minimize
             }
-            return RemoteAnimation::NotifyAnimationTransition(srcInfo, dstInfo, srcNode, dstNode);
+            return RemoteAnimation::NotifyAnimationTransition(srcInfo, dstInfo, srcNode, dstNode, windowRoot_);
         }
         case TransitionEvent::MINIMIZE:
-            return RemoteAnimation::NotifyAnimationMinimize(srcInfo, srcNode);
+            return RemoteAnimation::NotifyAnimationMinimize(srcInfo, srcNode, windowRoot_);
         case TransitionEvent::CLOSE:
-            return RemoteAnimation::NotifyAnimationClose(srcInfo, srcNode, TransitionEvent::CLOSE);
+            return RemoteAnimation::NotifyAnimationClose(srcInfo, srcNode, TransitionEvent::CLOSE, windowRoot_);
         case TransitionEvent::BACK:
-            return RemoteAnimation::NotifyAnimationClose(srcInfo, srcNode, TransitionEvent::BACK);
+            return RemoteAnimation::NotifyAnimationClose(srcInfo, srcNode, TransitionEvent::BACK, windowRoot_);
         default:
             return WMError::WM_ERROR_NO_REMOTE_ANIMATION;
     }
@@ -726,7 +726,7 @@ WMError WindowController::ProcessPointUp(uint32_t windowId)
 void WindowController::MinimizeAllAppWindows(DisplayId displayId)
 {
     windowRoot_->MinimizeAllAppWindows(displayId);
-    if (RemoteAnimation::NotifyAnimationByHome() != WMError::WM_OK) {
+    if (RemoteAnimation::NotifyAnimationByHome(windowRoot_) != WMError::WM_OK) {
         MinimizeApp::ExecuteMinimizeAll();
     }
 }

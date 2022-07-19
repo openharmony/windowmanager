@@ -22,6 +22,7 @@
 
 #include "wm_common.h"
 #include "window_node.h"
+#include "window_root.h"
 #include "window_transition_info.h"
 
 namespace OHOS {
@@ -46,13 +47,14 @@ public:
         sptr<WindowTransitionInfo> dstInfo, const sptr<WindowNode>& srcNode, const sptr<WindowNode>& dstNode);
     static WMError SetWindowAnimationController(const sptr<RSIWindowAnimationController>& controller);
     static WMError NotifyAnimationTransition(sptr<WindowTransitionInfo> srcInfo, sptr<WindowTransitionInfo> dstInfo,
-        const sptr<WindowNode>& srcNode, const sptr<WindowNode>& dstNode);
-    static WMError NotifyAnimationMinimize(sptr<WindowTransitionInfo> srcInfo, const sptr<WindowNode>& srcNode);
+        const sptr<WindowNode>& srcNode, const sptr<WindowNode>& dstNode, sptr<WindowRoot>& windowRoot);
+    static WMError NotifyAnimationMinimize(sptr<WindowTransitionInfo> srcInfo, const sptr<WindowNode>& srcNode,
+        sptr<WindowRoot>& windowRoot);
     static WMError NotifyAnimationClose(sptr<WindowTransitionInfo> srcInfo, const sptr<WindowNode>& srcNode,
-        TransitionEvent event);
+        TransitionEvent event, sptr<WindowRoot>& windowRoot);
     static void OnRemoteDie(const sptr<IRemoteObject>& remoteObject);
     static bool CheckAnimationController();
-    static WMError NotifyAnimationByHome();
+    static WMError NotifyAnimationByHome(sptr<WindowRoot>& windowRoot);
     static WMError NotifyAnimationScreenUnlock(std::function<void(void)> callback);
 private:
     static sptr<RSWindowAnimationTarget> CreateWindowAnimationTarget(sptr<WindowTransitionInfo> info,
