@@ -49,8 +49,8 @@ private:
         int32_t bufferHeight);
     static void DrawPixelmap(Drawing::Canvas &canvas, const std::string& imagePath);
     static std::unique_ptr<OHOS::Media::PixelMap> DecodeImageToPixelMap(const std::string &imagePath);
-    static bool DoDrawImageRect(uint8_t *addr, int32_t winWidth, int32_t winHeight, sptr<Media::PixelMap> pixelMap,
-        uint32_t color);
+    static bool DoDrawImageRect(uint8_t *addr, const Rect rect, sptr<Media::PixelMap> pixelMap,
+        uint32_t color, int32_t bufferStride);
 };
 } // Rosen
 } // OHOS
