@@ -454,8 +454,24 @@ void WindowNodeContainer::RecoverScreenDefaultOrientationIfNeed(DisplayId displa
 {
     if (displayGroupController_->displayGroupWindowTree_[displayId][WindowRootNodeType::APP_WINDOW_NODE]->empty()) {
         WLOGFI("appWindowNode_ child is empty in display  %{public}" PRIu64"", displayId);
-        DisplayManagerServiceInner::GetInstance().
-            SetOrientationFromWindow(displayId, Orientation::UNSPECIFIED);
+        auto aboveWindows =
+            *displayGroupController_->displayGroupWindowTree_[displayId][WindowRootNodeType::ABOVE_WINDOW_NODE];
+        for (auto iter = aboveWindows.begin(); iter != aboveWindows.end(); iter++) {
+            auto windowMode = (*iter)->GetWindowMode();
+            if (WindowHelper::IsFullScreenWindow(windowMode) || WindowHelper::IsSplitWindowMode(windowMode)) {
+                return;
+            }
+        }
+        auto belowWindows =
+            *displayGroupController_->displayGroupWindowTree_[displayId][WindowRootNodeType::BELOW_WINDOW_NODE];
+        Orientation targetOrientation = Orientation::UNSPECIFIED;
+        for (auto iter = belowWindows.begin(); iter != belowWindows.end(); iter++) {
+            if ((*iter)->GetWindowType() == WindowType::WINDOW_TYPE_DESKTOP) {
+                targetOrientation = (*iter)->GetRequestedOrientation();
+                break;
+            }
+        }
+        DisplayManagerServiceInner::GetInstance().SetOrientationFromWindow(displayId, targetOrientation);
     }
 }
 
@@ -869,7 +885,7 @@ void WindowNodeContainer::NotifyIfKeyboardRegionChanged(const sptr<WindowNode>& 
         callingWindowMode == WindowMode::WINDOW_MODE_SPLIT_SECONDARY) {
         const Rect keyRect = node->GetWindowRect();
         const Rect callingRect = callingWindow->GetWindowRect();
-        if (!WindowHelper::HasOverlap(callingRect, keyRect)) {
+        if (WindowHelper::IsEmptyRect(WindowHelper::GetOverlap(callingRect, keyRect, 0, 0))) {
             WLOGFD("no overlap between two windows");
             return;
         }
