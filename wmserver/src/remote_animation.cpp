@@ -110,7 +110,7 @@ TransitionEvent RemoteAnimation::GetTransitionEvent(sptr<WindowTransitionInfo> s
 
 WMError RemoteAnimation::NotifyAnimationTransition(sptr<WindowTransitionInfo> srcInfo,
     sptr<WindowTransitionInfo> dstInfo, const sptr<WindowNode>& srcNode,
-    const sptr<WindowNode>& dstNode)
+    const sptr<WindowNode>& dstNode, sptr<WindowRoot>& windowRoot)
 {
     if (!dstNode || !dstNode->startingWindowShown_) {
         WLOGFE("RSWindowAnimation: no startingWindow for dst window id:%{public}u!", dstNode->GetWindowId());
@@ -143,6 +143,9 @@ WMError RemoteAnimation::NotifyAnimationTransition(sptr<WindowTransitionInfo> sr
         auto srcTarget = CreateWindowAnimationTarget(srcInfo, srcNode);
         // to avoid normal animation
         srcNode->isPlayAnimationHide_ = true;
+        // update snapshot before animation
+        AAFwk::AbilityManagerClient::GetInstance()->UpdateMissionSnapShot(srcNode->abilityToken_);
+        windowRoot->RemoveWindowNode(srcNode->GetWindowId());
         WLOGFI("RSWindowAnimation: app transition from id:%{public}u to id:%{public}u!",
             srcNode->GetWindowId(), dstNode->GetWindowId());
         windowAnimationController_->OnAppTransition(srcTarget, dstTarget, finishedCallback);
@@ -168,7 +171,8 @@ WMError RemoteAnimation::NotifyAnimationTransition(sptr<WindowTransitionInfo> sr
     return WMError::WM_OK;
 }
 
-WMError RemoteAnimation::NotifyAnimationMinimize(sptr<WindowTransitionInfo> srcInfo, const sptr<WindowNode>& srcNode)
+WMError RemoteAnimation::NotifyAnimationMinimize(sptr<WindowTransitionInfo> srcInfo, const sptr<WindowNode>& srcNode,
+    sptr<WindowRoot>& windowRoot)
 {
     sptr<RSWindowAnimationTarget> srcTarget = CreateWindowAnimationTarget(srcInfo, srcNode);
     if (srcTarget == nullptr) {
@@ -176,6 +180,9 @@ WMError RemoteAnimation::NotifyAnimationMinimize(sptr<WindowTransitionInfo> srcI
     }
     WLOGFI("RSWindowAnimation: notify animation minimize Id:%{public}u!", srcNode->GetWindowId());
     srcNode->isPlayAnimationHide_ = true;
+    // update snapshot before animation
+    AAFwk::AbilityManagerClient::GetInstance()->UpdateMissionSnapShot(srcNode->abilityToken_);
+    windowRoot->RemoveWindowNode(srcNode->GetWindowId());
     wptr<WindowNode> weak = srcNode;
     auto minimizeFunc = [weak]() {
         auto weakNode = weak.promote();
@@ -198,7 +205,7 @@ WMError RemoteAnimation::NotifyAnimationMinimize(sptr<WindowTransitionInfo> srcI
 }
 
 WMError RemoteAnimation::NotifyAnimationClose(sptr<WindowTransitionInfo> srcInfo, const sptr<WindowNode>& srcNode,
-    TransitionEvent event)
+    TransitionEvent event, sptr<WindowRoot>& windowRoot)
 {
     sptr<RSWindowAnimationTarget> srcTarget = CreateWindowAnimationTarget(srcInfo, srcNode);
     if (srcTarget == nullptr) {
@@ -206,6 +213,9 @@ WMError RemoteAnimation::NotifyAnimationClose(sptr<WindowTransitionInfo> srcInfo
     }
     WLOGFI("RSWindowAnimation: notify animation close id:%{public}u!", srcNode->GetWindowId());
     srcNode->isPlayAnimationHide_ = true;
+    // update snapshot before animation
+    AAFwk::AbilityManagerClient::GetInstance()->UpdateMissionSnapShot(srcNode->abilityToken_);
+    windowRoot->RemoveWindowNode(srcNode->GetWindowId());
     wptr<WindowNode> weak = srcNode;
     auto closeFunc = [weak, event]() {
         auto weakNode = weak.promote();
@@ -217,7 +227,8 @@ WMError RemoteAnimation::NotifyAnimationClose(sptr<WindowTransitionInfo> srcInfo
             } else if (event == TransitionEvent::BACK) {
                 WLOGFI("terminate windowId: %{public}u, name:%{public}s",
                     weakNode->GetWindowId(), weakNode->GetWindowName().c_str());
-                AAFwk::AbilityManagerClient::GetInstance()->TerminateAbility(weakNode->abilityToken_, -1);
+                AAFwk::Want resultWant;
+                AAFwk::AbilityManagerClient::GetInstance()->TerminateAbility(weakNode->abilityToken_, -1, &resultWant);
             }
             FinishAsyncTraceArgs(HITRACE_TAG_WINDOW_MANAGER, static_cast<int32_t>(TraceTaskId::REMOTE_ANIMATION),
                 "wms:async:ShowRemoteAnimation");
@@ -233,7 +244,7 @@ WMError RemoteAnimation::NotifyAnimationClose(sptr<WindowTransitionInfo> srcInfo
     return WMError::WM_OK;
 }
 
-WMError RemoteAnimation::NotifyAnimationByHome()
+WMError RemoteAnimation::NotifyAnimationByHome(sptr<WindowRoot>& windowRoot)
 {
     if (!CheckAnimationController()) {
         return WMError::WM_ERROR_NO_REMOTE_ANIMATION;
@@ -249,6 +260,9 @@ WMError RemoteAnimation::NotifyAnimationByHome()
             continue;
         }
         srcNode->isPlayAnimationHide_ = true;
+        // update snapshot before animation
+        AAFwk::AbilityManagerClient::GetInstance()->UpdateMissionSnapShot(srcNode->abilityToken_);
+        windowRoot->RemoveWindowNode(srcNode->GetWindowId());
         animationTargets.emplace_back(srcTarget);
     }
     auto func = []() {
