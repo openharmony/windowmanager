@@ -286,7 +286,7 @@ WMError WindowNodeContainer::RemoveWindowNode(sptr<WindowNode>& node)
     if (HandleRemoveWindow(node) != WMError::WM_OK) {
         return WMError::WM_ERROR_NULLPTR;
     }
-    if (WindowHelper::IsMainNotFloatingWindow(node->GetWindowType(), lastMode)) {
+    if (!WindowHelper::IsFloatingWindow(lastMode)) {
         NotifyDockWindowStateChanged(node, true);
     }
     NotifyIfAvoidAreaChanged(node, AvoidControlType::AVOID_NODE_REMOVE);
