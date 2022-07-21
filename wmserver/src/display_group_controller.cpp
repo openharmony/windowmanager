@@ -368,8 +368,8 @@ void DisplayGroupController::ProcessDisplayCreate(DisplayId defaultDisplayId, sp
     ProcessCrossNodes(defaultDisplayId, DisplayStateChangeType::CREATE);
     UpdateDisplayGroupWindowTree();
     windowNodeContainer_->GetLayoutPolicy()->ProcessDisplayCreate(displayId, displayRectMap);
-    Rect initialDividerRect = windowNodeContainer_->GetLayoutPolicy()->GetInitalDividerRect(displayId);
-    SetInitalDividerRect(displayId, initialDividerRect);
+    Rect initialDividerRect = windowNodeContainer_->GetLayoutPolicy()->GetDividerRect(displayId);
+    SetDividerRect(displayId, initialDividerRect);
 }
 
 void DisplayGroupController::ProcessDisplayDestroy(DisplayId defaultDisplayId, sptr<DisplayInfo> displayInfo,
@@ -419,7 +419,13 @@ void DisplayGroupController::ProcessDisplaySizeChangeOrRotation(DisplayId defaul
     // modify RSTree and window tree of displayGroup for cross-display nodes
     ProcessCrossNodes(defaultDisplayId, type);
     UpdateDisplayGroupWindowTree();
-    windowNodeContainer_->GetLayoutPolicy()->ProcessDisplaySizeChangeOrRotation(displayId, displayRectMap);
+    if (windowNodeContainer_->GetLayoutPolicy() != nullptr) {
+        windowNodeContainer_->GetLayoutPolicy()->ProcessDisplaySizeChangeOrRotation(displayId, displayRectMap);
+        Rect curDividerRect = windowNodeContainer_->GetLayoutPolicy()->GetDividerRect(displayId);
+        if (windowPairMap_[displayId] != nullptr) {
+            windowPairMap_[displayId]->RotateDividerWindow(curDividerRect);
+        }
+    }
 }
 
 void DisplayGroupController::ClearMapOfDestroyedDisplay(DisplayId displayId)
@@ -439,10 +445,10 @@ sptr<WindowPair> DisplayGroupController::GetWindowPairByDisplayId(DisplayId disp
     return nullptr;
 }
 
-void DisplayGroupController::SetInitalDividerRect(DisplayId displayId, const Rect& rect)
+void DisplayGroupController::SetDividerRect(DisplayId displayId, const Rect& rect)
 {
     if (windowPairMap_.find(displayId) != windowPairMap_.end()) {
-        windowPairMap_[displayId]->SetInitalDividerRect(rect);
+        windowPairMap_[displayId]->SetDividerRect(rect);
     }
 }
 } // namespace Rosen

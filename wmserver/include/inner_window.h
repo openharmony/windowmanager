@@ -25,6 +25,7 @@ namespace Rosen {
 class IInnerWindow : virtual public RefBase {
 public:
     virtual void Create(std::string name, DisplayId displyId, Rect rect, WindowMode mode) = 0;
+    virtual void Update(uint32_t width, uint32_t height) = 0;
     virtual void Destroy() = 0;
 };
 
@@ -48,6 +49,7 @@ class PlaceHolderWindow : public IInnerWindow {
 WM_DECLARE_SINGLE_INSTANCE(PlaceHolderWindow);
 public:
     virtual void Create(std::string name, DisplayId displyId, Rect rect, WindowMode mode);
+    virtual void Update(uint32_t width, uint32_t height) {};
     virtual void Destroy();
 
 private:
@@ -64,6 +66,7 @@ WM_DECLARE_SINGLE_INSTANCE_BASE(DividerWindow);
 public:
     virtual void Create(std::string name, DisplayId displayId, const Rect rect, WindowMode mode);
     virtual void Destroy();
+    virtual void Update(uint32_t width, uint32_t height);
 
 protected:
     DividerWindow() = default;

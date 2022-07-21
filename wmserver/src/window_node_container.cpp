@@ -63,8 +63,8 @@ WindowNodeContainer::WindowNodeContainer(const sptr<DisplayInfo>& displayInfo, S
     layoutPolicy_ = layoutPolicies_[WindowLayoutMode::CASCADE];
     layoutPolicy_->Launch();
 
-    Rect initalDividerRect = layoutPolicies_[WindowLayoutMode::CASCADE]->GetInitalDividerRect(displayId);
-    displayGroupController_->SetInitalDividerRect(displayId, initalDividerRect);
+    Rect initalDividerRect = layoutPolicies_[WindowLayoutMode::CASCADE]->GetDividerRect(displayId);
+    displayGroupController_->SetDividerRect(displayId, initalDividerRect);
     // init avoidAreaController
     avoidController_ = new AvoidAreaController(focusedWindow_);
 }

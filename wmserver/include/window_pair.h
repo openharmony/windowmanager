@@ -171,7 +171,19 @@ public:
      */
     bool IsDockSliceInExitSplitModeArea(const std::vector<int32_t>& exitSplitPoints);
 
-    void SetInitalDividerRect(const Rect& rect);
+    /**
+     * Set the initial rect of divider window.
+     *
+     * @param rect divider window rect
+     */
+    void SetDividerRect(const Rect& rect);
+
+    /**
+     * Update divider window rect when display orientation changed.
+     *
+     * @param rect default divider rect
+     */
+    void RotateDividerWindow(const Rect& rect);
 
 private:
     /**
@@ -227,7 +239,7 @@ private:
     sptr<WindowNode> secondary_;
     sptr<WindowNode> divider_;
     WindowPairStatus status_ = {WindowPairStatus::STATUS_EMPTY};
-    Rect initalDividerRect_ {0, 0, 0, 0};
+    Rect dividerRect_ {0, 0, 0, 0};
     DEFINE_VAR_DEFAULT_FUNC_SET(bool, AllSplitAppWindowsRestoring, isAllSplitAppWindowsRestoring, false)
 };
 } // namespace Rosen

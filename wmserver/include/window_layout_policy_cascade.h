@@ -41,7 +41,7 @@ public:
     void UpdateLayoutRect(const sptr<WindowNode>& node) override;
     void SetSplitDividerWindowRects(std::map<DisplayId, Rect> dividerWindowRects) override;
     void RemoveWindowNode(const sptr<WindowNode>& node) override;
-    Rect GetInitalDividerRect(DisplayId displayId) const override;
+    Rect GetDividerRect(DisplayId displayId) const override;
     std::vector<int32_t> GetExitSplitPoints(DisplayId displayId) const override;
 
 private:

@@ -91,6 +91,7 @@ void WindowInnerManager::CreateInnerWindow(std::string name, DisplayId displayId
             }
             case WindowType::WINDOW_TYPE_DOCK_SLICE: {
                 DividerWindow::GetInstance().Create(name, displayId, rect, mode);
+                DividerWindow::GetInstance().Update(rect.width_, rect.height_);
                 break;
             }
             default:
@@ -112,6 +113,27 @@ void WindowInnerManager::DestroyInnerWindow(DisplayId displayId, WindowType type
             }
             case WindowType::WINDOW_TYPE_DOCK_SLICE: {
                 DividerWindow::GetInstance().Destroy();
+                break;
+            }
+            default:
+                break;
+        }
+    });
+    return;
+}
+
+void WindowInnerManager::UpdateInnerWindow(DisplayId displayId, WindowType type, uint32_t width, uint32_t height)
+{
+    eventHandler_->PostTask([this, type, width, height]() {
+        switch (type) {
+            case WindowType::WINDOW_TYPE_PLACEHOLDER: {
+                if (isRecentHolderEnable_) {
+                    PlaceHolderWindow::GetInstance().Update(width, height);
+                }
+                break;
+            }
+            case WindowType::WINDOW_TYPE_DOCK_SLICE: {
+                DividerWindow::GetInstance().Update(width, height);
                 break;
             }
             default:

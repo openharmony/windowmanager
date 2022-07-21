@@ -39,6 +39,7 @@ public:
     void Stop();
     void CreateInnerWindow(std::string name, DisplayId displayId, Rect rect, WindowType type, WindowMode mode);
     void DestroyInnerWindow(DisplayId displayId, WindowType type);
+    void UpdateInnerWindow(DisplayId displayId, WindowType type, uint32_t width, uint32_t height);
 
 protected:
     WindowInnerManager();
