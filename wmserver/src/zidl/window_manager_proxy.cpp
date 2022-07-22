@@ -590,22 +590,12 @@ void WindowManagerProxy::MinimizeWindowsByLauncher(std::vector<uint32_t> windowI
         WLOGFE("WriteInterfaceToken failed");
         return;
     }
-    auto size = static_cast<uint32_t>(windowIds.size());
-    const uint32_t maxWindowNum = 100;
-    if (size > maxWindowNum) {
-        WLOGFE("windowNum cannot exceeds than 100");
+
+    if (!data.WriteUInt32Vector(windowIds)) {
+        WLOGFE("Write windowIds failed");
         return;
     }
-    if (!data.WriteUint32(size)) {
-        WLOGFE("Write windowNum failed");
-        return;
-    }
-    for (auto id : windowIds) {
-        if (!data.WriteUint32(id)) {
-            WLOGFE("Write windowId failed");
-            return;
-        }
-    }
+
     if (!data.WriteBool(isAnimated)) {
         WLOGFE("Write isAnimated failed");
         return;
