@@ -71,11 +71,6 @@ public:
         return ((IsMainWindow(type)) && (mode == WindowMode::WINDOW_MODE_FULLSCREEN));
     }
 
-    static inline bool IsMainNotFloatingWindow(WindowType type, WindowMode mode)
-    {
-        return ((IsMainWindow(type)) && (mode != WindowMode::WINDOW_MODE_FLOATING));
-    }
-
     static inline bool IsFloatingWindow(WindowMode mode)
     {
         return mode == WindowMode::WINDOW_MODE_FLOATING;
