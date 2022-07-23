@@ -201,10 +201,7 @@ int32_t WindowManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, M
         }
         case WindowManagerMessage::TRANS_ID_GET_ANIMATION_CALLBACK: {
             std::vector<uint32_t> windowIds;
-            uint32_t windowNum = data.ReadUint32();
-            for (uint32_t i = 0; i < windowNum; ++i) {
-                windowIds.push_back(data.ReadUint32());
-            }
+            data.ReadUInt32Vector(&windowIds);
             bool isAnimated = data.ReadBool();
             sptr<RSIWindowAnimationFinishedCallback> finishedCallback = nullptr;
             MinimizeWindowsByLauncher(windowIds, isAnimated, finishedCallback);
