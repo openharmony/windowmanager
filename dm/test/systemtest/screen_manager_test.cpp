@@ -18,10 +18,8 @@
 #include "display_test_utils.h"
 #include "future.h"
 #include "screen.h"
+#include "surface_draw.h"
 #include "test_utils.h"
-#include "transaction/rs_transaction.h"
-#include "ui/rs_root_node.h"
-#include "ui/rs_ui_director.h"
 #include "window.h"
 #include "window_option.h"
 #include "window_manager_hilog.h"
@@ -33,6 +31,7 @@ namespace OHOS {
 namespace Rosen {
 namespace {
     constexpr HiviewDFX::HiLogLabel LABEL = {LOG_CORE, HILOG_DOMAIN_DISPLAY, "ScreenManagerTest"};
+    constexpr uint32_t COLOR_RED = 0xffff0000;
 }
 class ScreenGroupChangeListener;
 class ScreenManagerTest : public testing::Test {
@@ -42,6 +41,7 @@ public:
     virtual void SetUp() override;
     virtual void TearDown() override;
     sptr<Window> CreateWindowByDisplayId(DisplayId displayId);
+    bool DrawWindowColor(const sptr<Window>& window, uint32_t color);
     void CheckScreenStateInGroup(bool, sptr<ScreenGroup>, ScreenId, sptr<Screen>, ScreenId);
     void CheckScreenGroupState(ScreenCombination, ScreenGroupChangeEvent event, ScreenId,
         sptr<ScreenGroup>, sptr<ScreenGroupChangeListener>);
@@ -136,14 +136,20 @@ void ScreenManagerTest::TearDown()
 {
 }
 
-void RootNodeInit(std::shared_ptr<RSUIDirector> rsUiDirector, int width, int height)
+
+bool ScreenManagerTest::DrawWindowColor(const sptr<Window>& window, uint32_t color)
 {
-    std::cout << "rs app demo Init Rosen Backend!" << std::endl;
-    auto rootNode = RSRootNode::Create();
-    rootNode->SetBounds(0, 0, width, height);
-    rootNode->SetFrame(0, 0, width, height);
-    rootNode->SetBackgroundColor(SK_ColorRED);
-    rsUiDirector->SetRoot(rootNode->GetId());
+    auto surfaceNode = window->GetSurfaceNode();
+    if (surfaceNode == nullptr) {
+        WLOGFE("Failed to GetSurfaceNode!");
+        return false;
+    }
+    Rect rect = window->GetRequestRect();
+    uint32_t windowWidth = rect.width_;
+    uint32_t windowHeight = rect.height_;
+    WLOGFI("windowWidth: %{public}u, windowHeight: %{public}u", windowWidth, windowHeight);
+    SurfaceDraw::DrawColor(surfaceNode, windowWidth, windowHeight, color);
+    return true;
 }
 
 sptr<Window> ScreenManagerTest::CreateWindowByDisplayId(DisplayId displayId)
@@ -425,6 +431,49 @@ HWTEST_F(ScreenManagerTest, ScreenManager08, Function | MediumTest | Level2)
     ScreenManager::GetInstance().UnregisterScreenGroupListener(screenGroupChangeListener);
 }
 
+/**
+ * @tc.name: ScreenManager09
+ * @tc.desc: Create a virtual screen as expansion of default screen, create windowNode on virtual screen,
+ *           and destroy virtual screen
+ * @tc.type: FUNC
+ */
+HWTEST_F(ScreenManagerTest, ScreenManager09, Function | MediumTest | Level2)
+{
+    DisplayTestUtils utils;
+    ASSERT_TRUE(utils.CreateSurface());
+    defaultOption_.surface_ = utils.psurface_;
+    defaultOption_.isForShot_ = false;
+    CHECK_TEST_INIT_SCREEN_STATE
+    ScreenId virtualScreenId = ScreenManager::GetInstance().CreateVirtualScreen(defaultOption_);
+    CHECK_SCREEN_STATE_AFTER_CREATE_VIRTUAL_SCREEN
+    CheckScreenStateInGroup(false, group, groupId, virtualScreen, virtualScreenId);
+    sleep(TEST_SLEEP_S);
+    std::vector<ExpandOption> options = {{defaultScreenId_, 0, 0}, {virtualScreenId, defaultWidth_, 0}};
+    ScreenId expansionId = ScreenManager::GetInstance().MakeExpand(options);
+    CheckScreenGroupState(ScreenCombination::SCREEN_EXPAND, ScreenGroupChangeEvent::ADD_TO_GROUP,
+        virtualScreenId, group, screenGroupChangeListener);
+    CheckScreenStateInGroup(true, group, groupId, virtualScreen, virtualScreenId);
+    sleep(TEST_SLEEP_S);
+    ASSERT_NE(SCREEN_ID_INVALID, expansionId);
+    DisplayId virtualDisplayId = DisplayManager::GetInstance().GetDisplayByScreen(virtualScreenId)->GetId();
+    ASSERT_NE(DISPLAY_ID_INVALID, virtualDisplayId);
+    sptr<Window> window = CreateWindowByDisplayId(virtualDisplayId);
+    ASSERT_NE(nullptr, window);
+    ASSERT_EQ(true, DrawWindowColor(window, COLOR_RED));
+    sleep(TEST_SLEEP_S);
+    ASSERT_EQ(DMError::DM_OK, ScreenManager::GetInstance().DestroyVirtualScreen(virtualScreenId));
+    CHECK_SCREEN_STATE_AFTER_DESTROY_VIRTUAL_SCREEN
+    CheckScreenGroupState(ScreenCombination::SCREEN_EXPAND, ScreenGroupChangeEvent::REMOVE_FROM_GROUP,
+        virtualScreenId, group, screenGroupChangeListener);
+    CheckScreenStateInGroup(false, group, groupId, virtualScreen, virtualScreenId);
+    ScreenManager::GetInstance().UnregisterScreenListener(screenListener);
+    ScreenManager::GetInstance().UnregisterScreenGroupListener(screenGroupChangeListener);
+    sleep(TEST_SLEEP_S);
+    window->Show();
+    sleep(TEST_SLEEP_S_LONG);
+    window->Destroy();
+    sleep(TEST_SLEEP_S); // Wait for the window object to be destructed
+}
 
 /**
  * @tc.name: ScreenManager10
