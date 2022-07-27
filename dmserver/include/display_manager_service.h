@@ -23,6 +23,7 @@
 #include <surface.h>
 #include <ui/rs_display_node.h>
 
+#include "atomic_map.h"
 #include "dm_common.h"
 #include "display_dumper.h"
 #include "screen.h"
@@ -118,7 +119,7 @@ private:
     sptr<IDisplayChangeListener> displayChangeListener_;
     sptr<DisplayDumper> displayDumper_;
     static float customVirtualPixelRatio_;
-    std::map<ScreenId, uint32_t> accessTokenIdMaps_;
+    AtomicMap<ScreenId, uint32_t> accessTokenIdMaps_;
     bool isAutoRotationOpen_;
 };
 } // namespace OHOS::Rosen

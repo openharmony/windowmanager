@@ -189,16 +189,16 @@ ScreenId DisplayManagerService::CreateVirtualScreen(VirtualScreenOption option,
     HITRACE_METER_FMT(HITRACE_TAG_WINDOW_MANAGER, "dms:CreateVirtualScreen(%s)", option.name_.c_str());
     ScreenId screenId = abstractScreenController_->CreateVirtualScreen(option, displayManagerAgent);
     CHECK_SCREEN_AND_RETURN(SCREEN_ID_INVALID);
-    accessTokenIdMaps_[screenId] = IPCSkeleton::GetCallingTokenID();
+    accessTokenIdMaps_.insert(std::pair(screenId, IPCSkeleton::GetCallingTokenID()));
     return screenId;
 }
 
 DMError DisplayManagerService::DestroyVirtualScreen(ScreenId screenId)
 {
-    if (accessTokenIdMaps_[screenId] != IPCSkeleton::GetCallingTokenID()) {
+    if (!accessTokenIdMaps_.isExistAndRemove(screenId, IPCSkeleton::GetCallingTokenID())) {
         return DMError::DM_ERROR_INVALID_CALLING;
     }
-    accessTokenIdMaps_.erase(screenId);
+
     WLOGFI("DestroyVirtualScreen::ScreenId: %{public}" PRIu64 "", screenId);
     CHECK_SCREEN_AND_RETURN(DMError::DM_ERROR_INVALID_PARAM);
 

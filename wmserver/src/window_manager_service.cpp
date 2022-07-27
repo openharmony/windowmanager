@@ -379,7 +379,7 @@ WMError WindowManagerService::CreateWindow(sptr<IWindow>& window, sptr<WindowPro
         HITRACE_METER_FMT(HITRACE_TAG_WINDOW_MANAGER, "wms:CreateWindow(%u)", windowId);
         return windowController_->CreateWindow(window, property, surfaceNode, windowId, token, pid, uid);
     }).get();
-    accessTokenIdMaps_[windowId] = IPCSkeleton::GetCallingTokenID();
+    accessTokenIdMaps_.insert(std::pair(windowId, IPCSkeleton::GetCallingTokenID()));
     return ret;
 }
 
@@ -420,11 +420,10 @@ WMError WindowManagerService::RemoveWindow(uint32_t windowId)
 
 WMError WindowManagerService::DestroyWindow(uint32_t windowId, bool onlySelf)
 {
-    if (accessTokenIdMaps_[windowId] != IPCSkeleton::GetCallingTokenID()) {
+    if (!accessTokenIdMaps_.isExistAndRemove(windowId, IPCSkeleton::GetCallingTokenID())) {
         WLOGFI("Operation rejected");
         return WMError::WM_ERROR_INVALID_OPERATION;
     }
-    accessTokenIdMaps_.erase(windowId);
     return wmsTaskLooper_->ScheduleTask([this, windowId, onlySelf]() {
         WLOGFI("[WMS] Destroy: %{public}u", windowId);
         HITRACE_METER_FMT(HITRACE_TAG_WINDOW_MANAGER, "wms:DestroyWindow(%u)", windowId);
