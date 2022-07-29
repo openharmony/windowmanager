@@ -15,6 +15,7 @@
 
 #include "window_node_container.h"
 
+#include <ability_manager_client.h>
 #include <algorithm>
 #include <cinttypes>
 #include <ctime>
@@ -32,6 +33,7 @@
 #include "window_layout_policy_tile.h"
 #include "window_manager_agent_controller.h"
 #include "window_manager_hilog.h"
+#include "window_manager_service.h"
 #include "wm_common.h"
 #include "wm_common_inner.h"
 
@@ -1437,7 +1439,19 @@ void WindowNodeContainer::BackUpAllAppWindows()
     std::set<DisplayId> displayIdSet;
     backupWindowMode_.clear();
     backupDisplaySplitWindowMode_.clear();
-    for (auto& appNode : appWindowNode_->children_) {
+    std::vector<sptr<WindowNode>> children = appWindowNode_->children_;
+    for (auto& appNode : children) {
+        if (!WindowHelper::IsMainWindow(appNode->GetWindowType())) {
+            continue;
+        }
+        auto windowMode = appNode->GetWindowMode();
+        backupWindowMode_[appNode->GetWindowId()] = windowMode;
+        if (WindowHelper::IsSplitWindowMode(windowMode)) {
+            backupDisplaySplitWindowMode_[appNode->GetDisplayId()].insert(windowMode);
+        }
+        displayIdSet.insert(appNode->GetDisplayId());
+    }
+    for (auto& appNode : children) {
         // exclude exceptional window
         if (!WindowHelper::IsMainWindow(appNode->GetWindowType())) {
             WLOGFE("is not main window, windowId:%{public}u", appNode->GetWindowId());
@@ -1446,15 +1460,9 @@ void WindowNodeContainer::BackUpAllAppWindows()
         // minimize window
         WLOGFD("minimize window, windowId:%{public}u", appNode->GetWindowId());
         backupWindowIds_.emplace_back(appNode->GetWindowId());
-        auto windowMode = appNode->GetWindowMode();
-        backupWindowMode_[appNode->GetWindowId()] = windowMode;
-        if (WindowHelper::IsSplitWindowMode(windowMode)) {
-            backupDisplaySplitWindowMode_[appNode->GetWindowId()].insert(windowMode);
-        }
-        displayIdSet.insert(appNode->GetDisplayId());
-        if (appNode->GetWindowToken()) {
-            appNode->GetWindowToken()->UpdateWindowState(WindowState::STATE_HIDDEN);
-        }
+        WindowManagerService::GetInstance().HandleRemoveWindow(appNode->GetWindowId());
+        AAFwk::AbilityManagerClient::GetInstance()->DoAbilityBackground(appNode->abilityToken_,
+            static_cast<uint32_t>(WindowStateChangeReason::TOGGLING));
     }
     backupDividerWindowRect_.clear();
     for (auto displayId : displayIdSet) {

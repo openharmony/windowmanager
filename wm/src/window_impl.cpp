@@ -1066,8 +1066,10 @@ WMError WindowImpl::Hide(uint32_t reason, bool withAnimation)
         return WMError::WM_ERROR_INVALID_WINDOW;
     }
     WindowStateChangeReason stateChangeReason = static_cast<WindowStateChangeReason>(reason);
-    if (stateChangeReason == WindowStateChangeReason::KEYGUARD) {
-        state_ = WindowState::STATE_FROZEN;
+    if (stateChangeReason == WindowStateChangeReason::KEYGUARD ||
+        stateChangeReason == WindowStateChangeReason::TOGGLING) {
+        state_ = stateChangeReason == WindowStateChangeReason::KEYGUARD ?
+            WindowState::STATE_FROZEN : WindowState::STATE_HIDDEN;
         NotifyAfterBackground();
         return WMError::WM_OK;
     }
@@ -2317,15 +2319,6 @@ void WindowImpl::UpdateWindowState(WindowState state)
             } else {
                 state_ = WindowState::STATE_SHOWN;
                 NotifyAfterForeground();
-            }
-            break;
-        }
-        case WindowState::STATE_HIDDEN: {
-            if (abilityContext != nullptr && windowTag_ == WindowTag::MAIN_WINDOW) {
-                WLOGFD("MinimizeAbility, id: %{public}u", GetWindowId());
-                AAFwk::AbilityManagerClient::GetInstance()->MinimizeAbility(abilityContext->GetToken(), true);
-            } else {
-                Hide(static_cast<uint32_t>(WindowStateChangeReason::TOGGLING));
             }
             break;
         }

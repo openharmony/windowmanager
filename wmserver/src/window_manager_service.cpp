@@ -412,10 +412,15 @@ WMError WindowManagerService::HandleAddWindow(sptr<WindowProperty>& property)
 WMError WindowManagerService::RemoveWindow(uint32_t windowId)
 {
     return wmsTaskLooper_->ScheduleTask([this, windowId]() {
-        WLOGFI("[WMS] Remove: %{public}u", windowId);
-        HITRACE_METER_FMT(HITRACE_TAG_WINDOW_MANAGER, "wms:RemoveWindow(%u)", windowId);
-        return windowController_->RemoveWindowNode(windowId);
+        return HandleRemoveWindow(windowId);
     }).get();
+}
+
+WMError WindowManagerService::HandleRemoveWindow(uint32_t windowId)
+{
+    WLOGFI("[WMS] Remove: %{public}u", windowId);
+    HITRACE_METER_FMT(HITRACE_TAG_WINDOW_MANAGER, "wms:RemoveWindow(%u)", windowId);
+    return windowController_->RemoveWindowNode(windowId);
 }
 
 WMError WindowManagerService::DestroyWindow(uint32_t windowId, bool onlySelf)
