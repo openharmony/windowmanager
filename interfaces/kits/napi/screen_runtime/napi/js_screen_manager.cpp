@@ -707,11 +707,6 @@ NativeValue* InitScreenOrientation(NativeEngine* engine)
         CreateJsValue(*engine, static_cast<int32_t>(Orientation::REVERSE_VERTICAL)));
     object->SetProperty("REVERSE_HORIZONTAL",
         CreateJsValue(*engine, static_cast<int32_t>(Orientation::REVERSE_HORIZONTAL)));
-    object->SetProperty("SENSOR", CreateJsValue(*engine, static_cast<int32_t>(Orientation::SENSOR)));
-    object->SetProperty("SENSOR_VERTICAL",
-        CreateJsValue(*engine, static_cast<int32_t>(Orientation::SENSOR_VERTICAL)));
-    object->SetProperty("SENSOR_HORIZONTAL",
-        CreateJsValue(*engine, static_cast<int32_t>(Orientation::SENSOR_HORIZONTAL)));
     return objValue;
 }
 

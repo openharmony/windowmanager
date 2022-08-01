@@ -130,7 +130,15 @@ void JsWindowListener::OnAvoidAreaChanged(const AvoidArea avoidArea, AvoidAreaTy
                 NativeValue* argv[] = { avoidAreaValue };
                 thisListener->CallJsMethod(SYSTEM_AVOID_AREA_CHANGE_CB.c_str(), argv, ArraySize(argv));
             } else {
-                NativeValue* argv[] = { CreateJsValue(engine, static_cast<uint32_t>(type)), avoidAreaValue };
+                NativeValue *objValue = engine.CreateObject();
+                NativeObject *object = ConvertNativeValueTo<NativeObject>(objValue);
+                if (object == nullptr) {
+                    WLOGFE("Failed to get object");
+                    return;
+                }
+                object->SetProperty("type", CreateJsValue(engine, static_cast<uint32_t>(type)));
+                object->SetProperty("area", avoidAreaValue);
+                NativeValue* argv[] = { objValue };
                 thisListener->CallJsMethod(AVOID_AREA_CHANGE_CB.c_str(), argv, ArraySize(argv));
             }
         }
