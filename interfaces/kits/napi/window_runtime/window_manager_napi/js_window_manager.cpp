@@ -126,7 +126,7 @@ static bool GetWindowTypeAndParentName(NativeEngine& engine, std::string& parent
         winType = static_cast<WindowType>(static_cast<uint32_t>(*type));
     } else {
         if (static_cast<uint32_t>(*type) >= static_cast<uint32_t>(ApiWindowType::TYPE_BASE) &&
-            static_cast<uint32_t>(*type) <= static_cast<uint32_t>(ApiWindowType::TYPE_END)) {
+            static_cast<uint32_t>(*type) < static_cast<uint32_t>(ApiWindowType::TYPE_END)) {
             winType = JS_TO_NATIVE_WINDOW_TYPE_MAP.at(static_cast<ApiWindowType>(static_cast<uint32_t>(*type)));
         } else {
             WLOGFE("[NAPI]Type %{public}u is not supported", static_cast<uint32_t>(*type));
