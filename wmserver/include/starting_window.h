@@ -40,11 +40,13 @@ public:
     static void ReleaseStartWinSurfaceNode(sptr<WindowNode>& node);
     static bool NeedToStopStartingWindow(WindowMode winMode, uint32_t modeSupportInfo,
         const sptr<WindowTransitionInfo>& info);
+    static void SetDefaultWindowMode(WindowMode defaultMode);
 
 private:
     static WMError CreateLeashAndStartingSurfaceNode(sptr<WindowNode>& node);
     static SurfaceDraw surfaceDraw_;
     static std::recursive_mutex mutex_;
+    static WindowMode defaultMode_;
 };
 } // Rosen
 } // OHOS

@@ -359,6 +359,7 @@ enum class WindowUpdateType : int32_t {
 struct SystemConfig {
     bool isSystemDecorEnable_ = true;
     bool isStretchable_ = false;
+    WindowMode defaultWindowMode_ = WindowMode::WINDOW_MODE_FULLSCREEN;
 };
 }
 }

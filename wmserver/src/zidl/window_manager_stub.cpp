@@ -166,6 +166,7 @@ int32_t WindowManagerStub::OnRemoteRequest(uint32_t code, MessageParcel &data, M
             WMError errCode = GetSystemConfig(config);
             reply.WriteBool(config.isSystemDecorEnable_);
             reply.WriteBool(config.isStretchable_);
+            reply.WriteUint32(static_cast<uint32_t>(config.defaultWindowMode_));
             reply.WriteInt32(static_cast<int32_t>(errCode));
             break;
         }

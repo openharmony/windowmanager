@@ -138,9 +138,9 @@ private:
     Rect windowRect_ { 0, 0, 0, 0 }; // actual window rect
     bool decoStatus_ { false }; // window has been decorated or not
     WindowType type_ { WindowType::WINDOW_TYPE_APP_MAIN_WINDOW };
-    WindowMode mode_ { WindowMode::WINDOW_MODE_FULLSCREEN };
+    WindowMode mode_ { WindowMode::WINDOW_MODE_UNDEFINED };
     WindowBlurLevel level_ { WindowBlurLevel::WINDOW_BLUR_OFF };
-    WindowMode lastMode_ { WindowMode::WINDOW_MODE_FULLSCREEN };
+    WindowMode lastMode_ { WindowMode::WINDOW_MODE_UNDEFINED };
     uint32_t flags_ { 0 };
     bool isFullScreen_ { true };
     bool focusable_ { true };

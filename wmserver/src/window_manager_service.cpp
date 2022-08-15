@@ -30,6 +30,7 @@
 #include "permission.h"
 #include "remote_animation.h"
 #include "singleton_container.h"
+#include "starting_window.h"
 #include "ui/rs_ui_director.h"
 #include "window_helper.h"
 #include "window_inner_manager.h"
@@ -277,6 +278,16 @@ void WindowManagerService::ConfigureWindowManagerService()
 
     if (enableConfig.count("stretchable") != 0) {
         systemConfig_.isStretchable_ = enableConfig.at("stretchable");
+    }
+
+    if (intNumbersConfig.count("defaultWindowMode") != 0) {
+        auto numbers = intNumbersConfig.at("defaultWindowMode");
+        if (numbers.size() == 1 &&
+            (numbers[0] == static_cast<uint32_t>(WindowMode::WINDOW_MODE_FULLSCREEN) ||
+             numbers[0] == static_cast<uint32_t>(WindowMode::WINDOW_MODE_FLOATING))) {
+            systemConfig_.defaultWindowMode_ = static_cast<WindowMode>(static_cast<uint32_t>(numbers[0]));
+            StartingWindow::SetDefaultWindowMode(systemConfig_.defaultWindowMode_);
+        }
     }
 
     if (intNumbersConfig.count("maxAppWindowNumber") != 0) {
@@ -641,8 +652,7 @@ WMError WindowManagerService::GetAccessibilityWindowInfo(sptr<AccessibilityWindo
 
 WMError WindowManagerService::GetSystemConfig(SystemConfig& systemConfig)
 {
-    systemConfig.isSystemDecorEnable_ = systemConfig_.isSystemDecorEnable_;
-    systemConfig.isStretchable_ = systemConfig_.isStretchable_;
+    systemConfig = systemConfig_;
     return WMError::WM_OK;
 }
 

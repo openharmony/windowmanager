@@ -377,6 +377,9 @@ private:
     uint32_t GetModeSupportInfo() const;
     WMError PreProcessShow(uint32_t reason, bool withAnimation);
     bool NeedToStopShowing();
+    bool WindowCreateCheck(const std::string& parentName);
+    bool IsAppMainOrSubOrFloatingWindow();
+    void SetSystemConfig();
 
     // colorspace, gamut
     using ColorSpaceConvertMap = struct {
@@ -433,6 +436,7 @@ private:
     bool isWaitingFrame_ = false;
     bool needRemoveWindowInputChannel_ = false;
     bool isListenerHandlerRunning_ = false;
+    bool isAppFloatingWindow_ = false;
 };
 } // namespace Rosen
 } // namespace OHOS

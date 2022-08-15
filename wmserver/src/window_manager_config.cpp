@@ -73,7 +73,8 @@ bool WindowManagerConfig::LoadConfigXml()
             continue;
         }
         if (!xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("maxAppWindowNumber")) ||
-            !xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("modeChangeHotZones"))) {
+            !xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("modeChangeHotZones")) ||
+            !xmlStrcmp(nodeName, reinterpret_cast<const xmlChar*>("defaultWindowMode"))) {
             ReadIntNumbersConfigInfo(curNodePtr);
             continue;
         }

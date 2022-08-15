@@ -756,19 +756,62 @@ void WindowImpl::UpdateTitleButtonVisibility()
     uiContent_->HideWindowTitleButton(hideSplitButton, hideMaximizeButton, false);
 }
 
-WMError WindowImpl::Create(const std::string& parentName, const std::shared_ptr<AbilityRuntime::Context>& context)
+bool WindowImpl::IsAppMainOrSubOrFloatingWindow()
 {
-    WLOGFI("[Client] Window [name:%{public}s] Create", name_.c_str());
+    // App main window need decor config, stretchable config and effect config
+    // App sub window and float window need effect config
+    if (WindowHelper::IsAppWindow(GetType())) {
+        return true;
+    }
+
+    if (WindowHelper::IsAppFloatingWindow(GetType())) {
+        for (auto& winPair : windowMap_) {
+            auto win = winPair.second.second;
+            if (win != nullptr && win->GetType() == WindowType::WINDOW_TYPE_APP_MAIN_WINDOW &&
+                context_.get() == win->GetContext().get()) {
+                isAppFloatingWindow_ = true;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void WindowImpl::SetSystemConfig()
+{
+    if (!IsAppMainOrSubOrFloatingWindow()) {
+        return;
+    }
+    if (SingletonContainer::Get<WindowAdapter>().GetSystemConfig(windowSystemConfig_) == WMError::WM_OK) {
+        if (WindowHelper::IsMainWindow(property_->GetWindowType())) {
+            WLOGFI("get system decor enable:%{public}d", windowSystemConfig_.isSystemDecorEnable_);
+            property_->SetDecorEnable(windowSystemConfig_.isSystemDecorEnable_);
+            WLOGFI("get stretchable enable:%{public}d", windowSystemConfig_.isStretchable_);
+            property_->SetStretchable(windowSystemConfig_.isStretchable_);
+            // if window mode is undefined, set it from configuration
+            if (property_->GetWindowMode() == WindowMode::WINDOW_MODE_UNDEFINED) {
+                WLOGFI("get default window mode:%{public}u", windowSystemConfig_.defaultWindowMode_);
+                property_->SetWindowMode(windowSystemConfig_.defaultWindowMode_);
+            }
+            if (property_->GetLastWindowMode() == WindowMode::WINDOW_MODE_UNDEFINED) {
+                property_->SetLastWindowMode(windowSystemConfig_.defaultWindowMode_);
+            }
+        }
+    }
+}
+
+bool WindowImpl::WindowCreateCheck(const std::string& parentName)
+{
     // check window name, same window names are forbidden
     if (windowMap_.find(name_) != windowMap_.end()) {
         WLOGFE("WindowName(%{public}s) already exists.", name_.c_str());
-        return WMError::WM_ERROR_INVALID_PARAM;
+        return false;
     }
     // check parent name, if create sub window and there is not exist parent Window, then return
     if (parentName != "") {
         if (windowMap_.find(parentName) == windowMap_.end()) {
             WLOGFE("ParentName is empty or valid. ParentName is %{public}s", parentName.c_str());
-            return WMError::WM_ERROR_INVALID_PARAM;
+            return false;
         } else {
             uint32_t parentId = windowMap_[parentName].first;
             property_->SetParentId(parentId);
@@ -777,7 +820,16 @@ WMError WindowImpl::Create(const std::string& parentName, const std::shared_ptr<
 
     if (CheckCameraFloatingWindowMultiCreated(property_->GetWindowType())) {
         WLOGFE("Camera Floating Window already exists.");
-        return WMError::WM_ERROR_INVALID_WINDOW;
+        return false;
+    }
+    return true;
+}
+
+WMError WindowImpl::Create(const std::string& parentName, const std::shared_ptr<AbilityRuntime::Context>& context)
+{
+    WLOGFI("[Client] Window [name:%{public}s] Create", name_.c_str());
+    if (!WindowCreateCheck(parentName)) {
+        return WMError::WM_ERROR_INVALID_PARAM;
     }
 
     context_ = context;
@@ -792,17 +844,14 @@ WMError WindowImpl::Create(const std::string& parentName, const std::shared_ptr<
             property_->SetTokenState(true);
         }
     }
+    SetSystemConfig();
+
     if (WindowHelper::IsMainWindow(property_->GetWindowType())) {
-        if (SingletonContainer::Get<WindowAdapter>().GetSystemConfig(windowSystemConfig_) == WMError::WM_OK) {
-            WLOGFE("get system decor enable:%{public}d", windowSystemConfig_.isSystemDecorEnable_);
-            if (windowSystemConfig_.isSystemDecorEnable_) {
-                property_->SetDecorEnable(true);
-            }
-            WLOGFI("get stretchable enable:%{public}d", windowSystemConfig_.isStretchable_);
-            property_->SetStretchable(windowSystemConfig_.isStretchable_);
-        }
         GetConfigurationFromAbilityInfo();
+    } else if (property_->GetWindowMode() == WindowMode::WINDOW_MODE_UNDEFINED) {
+        property_->SetWindowMode(WindowMode::WINDOW_MODE_FULLSCREEN);
     }
+
     WMError ret = SingletonContainer::Get<WindowAdapter>().CreateWindow(windowAgent, property_, surfaceNode_,
         windowId, token);
     RecordLifeCycleExceptionEvent(LifeCycleEvent::CREATE_EVENT, ret);
