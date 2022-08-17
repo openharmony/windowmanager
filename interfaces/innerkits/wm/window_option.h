@@ -71,7 +71,7 @@ public:
 private:
     Rect windowRect_ { 0, 0, 0, 0 };
     WindowType type_ { WindowType::WINDOW_TYPE_APP_MAIN_WINDOW };
-    WindowMode mode_ { WindowMode::WINDOW_MODE_FULLSCREEN };
+    WindowMode mode_ { WindowMode::WINDOW_MODE_UNDEFINED };
     WindowBlurLevel level_ { WindowBlurLevel::WINDOW_BLUR_OFF };
     bool focusable_ { true };
     bool touchable_ { true };

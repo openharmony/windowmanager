@@ -501,6 +501,7 @@ WMError WindowManagerProxy::GetSystemConfig(SystemConfig& systemConfig)
     }
     systemConfig.isSystemDecorEnable_ = reply.ReadBool();
     systemConfig.isStretchable_ = reply.ReadBool();
+    systemConfig.defaultWindowMode_ = static_cast<WindowMode>(reply.ReadUint32());
     int32_t ret = reply.ReadInt32();
     return static_cast<WMError>(ret);
 }
