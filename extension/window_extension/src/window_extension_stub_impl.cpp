@@ -63,7 +63,7 @@ void WindowExtensionStubImpl::SetBounds(const Rect& rect)
         window_->Resize(rect.width_, rect.height_);
     }
     if (rect.posX_ != orgRect.posX_ || rect.posY_ != orgRect.posY_) {
-        window_->MoveTo(orgRect.posX_, orgRect.posY_);
+        window_->MoveTo(rect.posX_, rect.posY_);
     }
 }
 
