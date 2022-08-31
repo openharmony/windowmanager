@@ -88,6 +88,12 @@ public:
             || type == WindowType::WINDOW_TYPE_INPUT_METHOD_FLOAT);
     }
 
+    static inline bool IsRotatableWindow(WindowType type, WindowMode mode)
+    {
+        return WindowHelper::IsMainFullScreenWindow(type, mode) || type == WindowType::WINDOW_TYPE_KEYGUARD ||
+            type == WindowType::WINDOW_TYPE_DESKTOP;
+    }
+
     static inline bool IsFullScreenWindow(WindowMode mode)
     {
         return mode == WindowMode::WINDOW_MODE_FULLSCREEN;
@@ -118,15 +124,6 @@ public:
     static inline bool IsLandscapeRect(const Rect& r)
     {
         return r.width_ > r.height_;
-    }
-
-    static inline bool HasOverlap(const Rect& r1, const Rect& r2)
-    {
-        int32_t r1XEnd = r1.posX_ + r1.width_;
-        int32_t r1YEnd = r1.posY_ + r1.height_;
-        int32_t r2XEnd = r2.posX_ + r2.width_;
-        int32_t r2YEnd = r2.posY_ + r2.height_;
-        return !(r1XEnd < r2.posX_ || r1.posX_ > r2XEnd || r1YEnd < r2.posY_ || r1.posY_ > r2YEnd);
     }
 
     static Rect GetOverlap(const Rect& rect1, const Rect& rect2, const int offsetX, const int offsetY)
