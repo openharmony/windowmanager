@@ -30,7 +30,7 @@ void InputEventListener::OnInputEvent(std::shared_ptr<MMI::KeyEvent> keyEvent) c
         return;
     }
     uint32_t windowId = static_cast<uint32_t>(keyEvent->GetAgentWindowId());
-    WLOGFI("Receive keyEvent, windowId: %{public}u", windowId);
+    WLOGFD("Receive keyEvent, windowId: %{public}u", windowId);
     auto channel = InputTransferStation::GetInstance().GetInputChannel(windowId);
     if (channel == nullptr) {
         WLOGFE("WindowInputChannel is nullptr");
@@ -45,7 +45,7 @@ void InputEventListener::OnInputEvent(std::shared_ptr<MMI::AxisEvent> axisEvent)
         WLOGFE("AxisEvent is nullptr");
         return;
     }
-    WLOGFI("Receive axisEvent, windowId: %{public}d", axisEvent->GetAgentWindowId());
+    WLOGFD("Receive axisEvent, windowId: %{public}d", axisEvent->GetAgentWindowId());
     axisEvent->MarkProcessed();
 }
 
@@ -56,7 +56,7 @@ void InputEventListener::OnInputEvent(std::shared_ptr<MMI::PointerEvent> pointer
         return;
     }
     uint32_t windowId = static_cast<uint32_t>(pointerEvent->GetAgentWindowId());
-    WLOGFI("Receive pointerEvent, windowId: %{public}u", windowId);
+    WLOGFD("Receive pointerEvent, windowId: %{public}u", windowId);
     auto channel = InputTransferStation::GetInstance().GetInputChannel(windowId);
     if (channel == nullptr) {
         WLOGFE("WindowInputChannel is nullptr");
@@ -68,12 +68,12 @@ void InputEventListener::OnInputEvent(std::shared_ptr<MMI::PointerEvent> pointer
 void InputTransferStation::AddInputWindow(const sptr<Window>& window)
 {
     uint32_t windowId = window->GetWindowId();
-    WLOGFI("Add input window, windowId: %{public}u", windowId);
+    WLOGFD("Add input window, windowId: %{public}u", windowId);
     sptr<WindowInputChannel> inputChannel = new WindowInputChannel(window);
     std::lock_guard<std::mutex> lock(mtx_);
     windowInputChannels_.insert(std::make_pair(windowId, inputChannel));
     if (inputListener_ == nullptr) {
-        WLOGFI("Init input listener");
+        WLOGFD("Init input listener");
         std::shared_ptr<MMI::IInputEventConsumer> listener = std::make_shared<InputEventListener>(InputEventListener());
         MMI::InputManager::GetInstance()->SetWindowInputEventConsumer(listener);
         inputListener_ = listener;
@@ -82,7 +82,7 @@ void InputTransferStation::AddInputWindow(const sptr<Window>& window)
 
 void InputTransferStation::RemoveInputWindow(uint32_t windowId)
 {
-    WLOGFI("Remove input window, windowId: %{public}u", windowId);
+    WLOGFD("Remove input window, windowId: %{public}u", windowId);
     sptr<WindowInputChannel> inputChannel = nullptr;
     {
         std::lock_guard<std::mutex> lock(mtx_);
@@ -102,7 +102,7 @@ void InputTransferStation::RemoveInputWindow(uint32_t windowId)
 void InputTransferStation::SetInputListener(
     uint32_t windowId, const std::shared_ptr<MMI::IInputEventConsumer>& listener)
 {
-    WLOGFI("windowId: %{public}u", windowId);
+    WLOGFD("windowId: %{public}u", windowId);
     auto channel = GetInputChannel(windowId);
     if (channel == nullptr) {
         WLOGFE("WindowInputChannel is nullptr, windowId: %{public}u", windowId);
