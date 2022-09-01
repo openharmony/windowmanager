@@ -311,7 +311,7 @@ WMError WindowImpl::GetAvoidAreaByType(AvoidAreaType type, AvoidArea& avoidArea)
 
 WMError WindowImpl::SetWindowType(WindowType type)
 {
-    WLOGFI("window id: %{public}u, type:%{public}u.", property_->GetWindowId(), static_cast<uint32_t>(type));
+    WLOGFD("window id: %{public}u, type:%{public}u.", property_->GetWindowId(), static_cast<uint32_t>(type));
     if (!IsWindowValid()) {
         return WMError::WM_ERROR_INVALID_WINDOW;
     }
@@ -444,7 +444,7 @@ WMError WindowImpl::SetWindowFlags(uint32_t flags)
 
 void WindowImpl::OnNewWant(const AAFwk::Want& want)
 {
-    WLOGFI("[Client] Window [name:%{public}s, id:%{public}u] OnNewWant", name_.c_str(), property_->GetWindowId());
+    WLOGFD("[Client] Window [name:%{public}s, id:%{public}u] OnNewWant", name_.c_str(), property_->GetWindowId());
     if (uiContent_ != nullptr) {
         uiContent_->OnNewWant(want);
     }
@@ -453,7 +453,7 @@ void WindowImpl::OnNewWant(const AAFwk::Want& want)
 WMError WindowImpl::SetUIContent(const std::string& contentInfo,
     NativeEngine* engine, NativeValue* storage, bool isdistributed, AppExecFwk::Ability* ability)
 {
-    WLOGFI("SetUIContent contentInfo: %{public}s", contentInfo.c_str());
+    WLOGFD("SetUIContent contentInfo: %{public}s", contentInfo.c_str());
     std::unique_ptr<Ace::UIContent> uiContent;
     if (ability != nullptr) {
         uiContent = Ace::UIContent::Create(ability);
@@ -491,7 +491,7 @@ WMError WindowImpl::SetUIContent(const std::string& contentInfo,
         float virtualPixelRatio = display->GetVirtualPixelRatio();
         config.SetDensity(virtualPixelRatio);
         uiContent_->UpdateViewportConfig(config, WindowSizeChangeReason::UNDEFINED);
-        WLOGFI("notify uiContent window size change end");
+        WLOGFD("notify uiContent window size change end");
     }
     return WMError::WM_OK;
 }
@@ -503,7 +503,7 @@ Ace::UIContent* WindowImpl::GetUIContent() const
 
 std::string WindowImpl::GetContentInfo()
 {
-    WLOGFI("GetContentInfo");
+    WLOGFD("GetContentInfo");
     if (uiContent_ == nullptr) {
         WLOGFE("fail to GetContentInfo id: %{public}u", property_->GetWindowId());
         return "";
@@ -550,7 +550,7 @@ ColorSpace WindowImpl::GetColorSpace()
 
 std::shared_ptr<Media::PixelMap> WindowImpl::Snapshot()
 {
-    WLOGFI("WMS-Clinet Snapshot");
+    WLOGFD("WMS-Clinet Snapshot");
     std::shared_ptr<SurfaceCaptureFuture> callback = std::make_shared<SurfaceCaptureFuture>();
     RSInterfaces::GetInstance().TakeSurfaceCapture(surfaceNode_, callback);
     std::shared_ptr<Media::PixelMap> pixelMap = callback->GetResult(2000); // wait for <= 2000ms
@@ -711,7 +711,7 @@ void WindowImpl::GetConfigurationFromAbilityInfo()
         WLOGFD("mode config param is 0, all modes is supported");
         modeSupportInfo = WindowModeSupport::WINDOW_MODE_SUPPORT_ALL;
     }
-    WLOGFI("winId: %{public}u, modeSupportInfo: %{public}u", GetWindowId(), modeSupportInfo);
+    WLOGFD("winId: %{public}u, modeSupportInfo: %{public}u", GetWindowId(), modeSupportInfo);
     SetRequestModeSupportInfo(modeSupportInfo);
 
     // get window size limits configuration
@@ -1109,7 +1109,7 @@ WMError WindowImpl::Show(uint32_t reason, bool withAnimation)
 
 WMError WindowImpl::Hide(uint32_t reason, bool withAnimation)
 {
-    WLOGFI("[Client] Window [name:%{public}s, id:%{public}u] Hide, reason:%{public}u, withAnimation:%{public}d",
+    WLOGFD("[Client] Window [name:%{public}s, id:%{public}u] Hide, reason:%{public}u, withAnimation:%{public}d",
         name_.c_str(), property_->GetWindowId(), reason, withAnimation);
     if (!IsWindowValid()) {
         return WMError::WM_ERROR_INVALID_WINDOW;
@@ -1153,7 +1153,7 @@ WMError WindowImpl::Hide(uint32_t reason, bool withAnimation)
 
 WMError WindowImpl::MoveTo(int32_t x, int32_t y)
 {
-    WLOGFI("[Client] Window [name:%{public}s, id:%{public}d] MoveTo %{public}d %{public}d",
+    WLOGFD("[Client] Window [name:%{public}s, id:%{public}d] MoveTo %{public}d %{public}d",
         name_.c_str(), property_->GetWindowId(), x, y);
     if (!IsWindowValid()) {
         return WMError::WM_ERROR_INVALID_WINDOW;
@@ -1172,7 +1172,7 @@ WMError WindowImpl::MoveTo(int32_t x, int32_t y)
 
 WMError WindowImpl::Resize(uint32_t width, uint32_t height)
 {
-    WLOGFI("[Client] Window [name:%{public}s, id:%{public}d] Resize %{public}u %{public}u",
+    WLOGFD("[Client] Window [name:%{public}s, id:%{public}d] Resize %{public}u %{public}u",
         name_.c_str(), property_->GetWindowId(), width, height);
     if (!IsWindowValid()) {
         return WMError::WM_ERROR_INVALID_WINDOW;
@@ -1400,7 +1400,7 @@ void WindowImpl::DisableAppWindowDecor()
 
 bool WindowImpl::IsDecorEnable() const
 {
-    WLOGFE("get decor enable %{public}d", property_->GetDecorEnable());
+    WLOGFD("get decor enable %{public}d", property_->GetDecorEnable());
     return property_->GetDecorEnable();
 }
 
@@ -1823,7 +1823,7 @@ void WindowImpl::UpdateRect(const struct Rect& rect, bool decoStatus, WindowSize
         property_->SetOriginRect(rect);
         isOriginRectSet_ = true;
     }
-    WLOGFI("winId:%{public}u, rect[%{public}d, %{public}d, %{public}u, %{public}u], reason:%{public}u",
+    WLOGFD("winId:%{public}u, rect[%{public}d, %{public}d, %{public}u, %{public}u], reason:%{public}u",
         property_->GetWindowId(), rect.posX_, rect.posY_, rect.width_, rect.height_, reason);
     Rect rectToAce = rect;
     // update rectToAce for stretchable window
@@ -2435,7 +2435,7 @@ void WindowImpl::UpdateOccupiedAreaChangeInfo(const sptr<OccupiedAreaChangeInfo>
 
 void WindowImpl::UpdateActiveStatus(bool isActive)
 {
-    WLOGFI("window active status: %{public}d, id: %{public}u", isActive, property_->GetWindowId());
+    WLOGFD("window active status: %{public}d, id: %{public}u", isActive, property_->GetWindowId());
     if (isActive) {
         NotifyAfterActive();
     } else {
