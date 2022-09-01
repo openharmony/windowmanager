@@ -784,13 +784,13 @@ void WindowImpl::SetSystemConfig()
     }
     if (SingletonContainer::Get<WindowAdapter>().GetSystemConfig(windowSystemConfig_) == WMError::WM_OK) {
         if (WindowHelper::IsMainWindow(property_->GetWindowType())) {
-            WLOGFI("get system decor enable:%{public}d", windowSystemConfig_.isSystemDecorEnable_);
+            WLOGFD("get system decor enable:%{public}d", windowSystemConfig_.isSystemDecorEnable_);
             property_->SetDecorEnable(windowSystemConfig_.isSystemDecorEnable_);
-            WLOGFI("get stretchable enable:%{public}d", windowSystemConfig_.isStretchable_);
+            WLOGFD("get stretchable enable:%{public}d", windowSystemConfig_.isStretchable_);
             property_->SetStretchable(windowSystemConfig_.isStretchable_);
             // if window mode is undefined, set it from configuration
             if (property_->GetWindowMode() == WindowMode::WINDOW_MODE_UNDEFINED) {
-                WLOGFI("get default window mode:%{public}u", windowSystemConfig_.defaultWindowMode_);
+                WLOGFD("get default window mode:%{public}u", windowSystemConfig_.defaultWindowMode_);
                 property_->SetWindowMode(windowSystemConfig_.defaultWindowMode_);
             }
             if (property_->GetLastWindowMode() == WindowMode::WINDOW_MODE_UNDEFINED) {
@@ -1836,7 +1836,7 @@ void WindowImpl::UpdateRect(const struct Rect& rect, bool decoStatus, WindowSize
             property_->SetOriginRect(rect);
         }
     }
-    WLOGFI("sizeChange callback size: %{public}lu", (unsigned long)windowChangeListeners_.size());
+    WLOGFD("sizeChange callback size: %{public}lu", (unsigned long)windowChangeListeners_.size());
 
     NotifySizeChange(rectToAce, reason);
     if (uiContent_ != nullptr) {
