@@ -286,7 +286,7 @@ DeviceRotation ScreenRotationController::CalcDeviceRotation(SensorRotation senso
 
 bool ScreenRotationController::IsSensorRelatedOrientation(Orientation orientation)
 {
-    if ((orientation >= Orientation::VERTICAL && orientation <= Orientation::REVERSE_HORIZONTAL) ||
+    if ((orientation >= Orientation::UNSPECIFIED && orientation <= Orientation::REVERSE_HORIZONTAL) ||
         orientation == Orientation::LOCKED) {
         return false;
     }
@@ -301,7 +301,6 @@ void ScreenRotationController::ProcessSwitchToSensorRelatedOrientation(
     }
     lastOrientationType_ = orientation;
     switch (orientation) {
-        case Orientation::UNSPECIFIED:
         case Orientation::AUTO_ROTATION_RESTRICTED: {
             if (isScreenRotationLocked_) {
                 SetScreenRotation(rotationLockedRotation_);
@@ -499,6 +498,10 @@ void ScreenRotationController::ProcessSwitchToSensorUnrelatedOrientation(Orienta
     }
     lastOrientationType_ = orientation;
     switch (orientation) {
+        case Orientation::UNSPECIFIED: {
+            SetScreenRotation(Rotation::ROTATION_0);
+            break;
+        }
         case Orientation::VERTICAL: {
             SetScreenRotation(ConvertDeviceToDisplayRotation(DeviceRotation::ROTATION_PORTRAIT));
             break;
