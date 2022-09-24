@@ -32,6 +32,7 @@ public:
     virtual bool Marshalling(Parcel& parcel) const override;
     static DisplayInfo *Unmarshalling(Parcel& parcel);
 
+    DEFINE_VAR_DEFAULT_FUNC_GET(std::string, Name, name, "");
     DEFINE_VAR_DEFAULT_FUNC_GET_SET(DisplayId, DisplayId, id, DISPLAY_ID_INVALID);
     DEFINE_VAR_DEFAULT_FUNC_GET_SET(DisplayType, DisplayType, type, DisplayType::DEFAULT);
     DEFINE_VAR_DEFAULT_FUNC_GET_SET(int32_t, Width, width, 0);
@@ -46,7 +47,7 @@ public:
     DEFINE_VAR_DEFAULT_FUNC_GET_SET(Orientation, Orientation, orientation, Orientation::UNSPECIFIED);
     DEFINE_VAR_DEFAULT_FUNC_GET_SET(int32_t, OffsetX, offsetX, 0);
     DEFINE_VAR_DEFAULT_FUNC_GET_SET(int32_t, OffsetY, offsetY, 0);
-
+    DEFINE_VAR_DEFAULT_FUNC_GET(DisplayState, DisplayState, displayState, DisplayState::UNKNOWN);
 protected:
     DisplayInfo() = default;
 };

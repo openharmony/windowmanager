@@ -81,7 +81,8 @@ protected:
 
 class AbstractScreenGroup : public AbstractScreen {
 public:
-    AbstractScreenGroup(sptr<AbstractScreenController>, ScreenId dmsId, ScreenId rsId, ScreenCombination combination);
+    AbstractScreenGroup(sptr<AbstractScreenController>, ScreenId dmsId, ScreenId rsId, std::string name,
+        ScreenCombination combination);
     AbstractScreenGroup() = delete;
     WM_DISALLOW_COPY_AND_MOVE(AbstractScreenGroup);
     ~AbstractScreenGroup();

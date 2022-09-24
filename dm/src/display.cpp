@@ -48,6 +48,11 @@ DisplayId Display::GetId() const
     return pImpl_->GetDisplayInfo()->GetDisplayId();
 }
 
+std::string Display::GetName() const
+{
+    return pImpl_->GetDisplayInfo()->GetName();
+}
+
 int32_t Display::GetWidth() const
 {
     UpdateDisplayInfo();
