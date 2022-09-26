@@ -33,7 +33,8 @@ public:
     constexpr static int32_t DEFAULT_HIGHT = 1280;
     constexpr static float DEFAULT_VIRTUAL_PIXEL_RATIO = 1.0;
     constexpr static uint32_t DEFAULT_FRESH_RATE = 60;
-    AbstractDisplay(DisplayId id, ScreenId screenId, ScreenId screenGroupId, sptr<SupportedScreenModes> info);
+    AbstractDisplay(DisplayId id, ScreenId screenId, std::string name,
+        ScreenId screenGroupId, sptr<SupportedScreenModes> info);
     WM_DISALLOW_COPY_AND_MOVE(AbstractDisplay);
     ~AbstractDisplay() = default;
     static inline bool IsVertical(Rotation rotation)
@@ -71,6 +72,7 @@ private:
     DisplayId id_ { DISPLAY_ID_INVALID };
     ScreenId screenId_ { SCREEN_ID_INVALID };
     ScreenId screenGroupId_ { SCREEN_ID_INVALID };
+    std::string name_ { "" };
     int32_t offsetX_ { 0 };
     int32_t offsetY_ { 0 };
     int32_t width_ { 0 };
@@ -80,6 +82,7 @@ private:
     Rotation rotation_ { Rotation::ROTATION_0 };
     Orientation orientation_ { Orientation::UNSPECIFIED };
     FreezeFlag freezeFlag_ { FreezeFlag::UNFREEZING };
+    DEFINE_VAR_DEFAULT_FUNC_SET(DisplayState, DisplayState, displayState, DisplayState::UNKNOWN);
 };
 } // namespace OHOS::Rosen
 #endif // FOUNDATION_DMSERVER_ABSTRACT_DISPLAY_H

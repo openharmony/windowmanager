@@ -269,7 +269,8 @@ Rotation AbstractScreen::CalcRotation(Orientation orientation) const
 }
 
 AbstractScreenGroup::AbstractScreenGroup(sptr<AbstractScreenController> screenController, ScreenId dmsId, ScreenId rsId,
-    ScreenCombination combination) : AbstractScreen(screenController, "", dmsId, rsId), combination_(combination)
+    std::string name, ScreenCombination combination) : AbstractScreen(screenController, name, dmsId, rsId),
+    combination_(combination)
 {
     type_ = ScreenType::UNDEFINE;
     isScreenGroup_ = true;

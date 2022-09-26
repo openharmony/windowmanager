@@ -36,6 +36,7 @@ public:
     Display& operator=(const Display&) = delete;
     Display& operator=(Display&&) = delete;
     DisplayId GetId() const;
+    std::string GetName() const;
     int32_t GetWidth() const;
     int32_t GetHeight() const;
     uint32_t GetRefreshRate() const;

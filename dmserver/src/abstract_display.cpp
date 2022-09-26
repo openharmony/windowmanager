@@ -26,11 +26,12 @@ namespace {
     constexpr int32_t PHONE_SCREEN_WIDTH = 2160;
 }
 
-AbstractDisplay::AbstractDisplay(DisplayId id, ScreenId screenId,
+AbstractDisplay::AbstractDisplay(DisplayId id, ScreenId screenId, std::string name,
     ScreenId screenGroupId, sptr<SupportedScreenModes> info)
     : id_(id),
       screenId_(screenId),
       screenGroupId_(screenGroupId),
+      name_(name),
       width_(info->width_),
       height_(info->height_),
       refreshRate_(info->refreshRate_)
@@ -207,6 +208,7 @@ sptr<DisplayInfo> AbstractDisplay::ConvertToDisplayInfo() const
     if (displayInfo == nullptr) {
         return displayInfo;
     }
+    displayInfo->name_ = name_;
     displayInfo->SetOffsetX(offsetX_);
     displayInfo->SetOffsetY(offsetY_);
     displayInfo->SetWidth(width_);
@@ -218,6 +220,7 @@ sptr<DisplayInfo> AbstractDisplay::ConvertToDisplayInfo() const
     displayInfo->SetVirtualPixelRatio(virtualPixelRatio_);
     displayInfo->SetRotation(rotation_);
     displayInfo->SetOrientation(orientation_);
+    displayInfo->displayState_ = displayState_;
     return displayInfo;
 }
 } // namespace OHOS::Rosen

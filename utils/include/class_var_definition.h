@@ -23,7 +23,7 @@ private:                                                                        
 
 #define DEFINE_VAR_WITH_LOCK(type, memberName)                                     \
 private:                                                                           \
-    std::recursive_mutex memberName##Mutex_;                                       \
+    std::atomic<bool> memberName##atomicBool_ { false };                           \
     type memberName##_;
 
 #define DEFINE_VAR_DEFAULT(type, memberName, defaultValue)                         \
@@ -41,8 +41,15 @@ public:                                                                         
 public:                                                                            \
     type Get##funcName()                                                           \
     {                                                                              \
-        std::lock_guard<std::recursive_mutex> lock(memberName##Mutex_);            \
-        return memberName##_;                                                      \
+        bool expect = false;                                                       \
+        type res;                                                                  \
+        while (!memberName##atomicBool_.compare_exchange_weak(expect, true,        \
+            std::memory_order_relaxed)) {                                          \
+            expect = false;                                                        \
+        }                                                                          \
+        res = memberName##_;                                                       \
+        memberName##atomicBool_.store(false);                                      \
+        return res;                                                                \
     }
 
 #define DEFINE_FUNC_SET(type, funcName, memberName)                                \
@@ -56,8 +63,14 @@ public:                                                                         
 public:                                                                            \
     void Set##funcName(type value)                                                 \
     {                                                                              \
-        std::lock_guard<std::recursive_mutex> lock(memberName##Mutex_);            \
+        bool expect = false;                                                       \
+        while (!memberName##atomicBool_.compare_exchange_weak(expect, true,        \
+            std::memory_order_relaxed)) {                                          \
+            expect = false;                                                        \
+        }                                                                          \
+                                                                                   \
         memberName##_ = value;                                                     \
+        memberName##atomicBool_.store(false);                                      \
     }
 
 #define DEFINE_VAR_FUNC_GET(type, funcName, memberName)                            \

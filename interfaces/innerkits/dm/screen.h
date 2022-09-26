@@ -66,7 +66,7 @@ public:
     Screen& operator=(const Screen&) = delete;
     Screen& operator=(Screen&&) = delete;
     bool IsGroup() const;
-    const std::string GetName() const;
+    std::string GetName() const;
     ScreenId GetId() const;
     uint32_t GetWidth() const;
     uint32_t GetHeight() const;

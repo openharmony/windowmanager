@@ -18,13 +18,14 @@
 namespace OHOS::Rosen {
 bool DisplayInfo::Marshalling(Parcel &parcel) const
 {
-    return parcel.WriteUint64(id_) && parcel.WriteUint32(static_cast<uint32_t>(type_)) &&
+    return parcel.WriteString(name_) && parcel.WriteUint64(id_) && parcel.WriteUint32(static_cast<uint32_t>(type_)) &&
         parcel.WriteInt32(width_) && parcel.WriteInt32(height_) &&
         parcel.WriteUint32(refreshRate_) && parcel.WriteUint64(screenId_) &&
         parcel.WriteFloat(virtualPixelRatio_) && parcel.WriteFloat(xDpi_) && parcel.WriteFloat(yDpi_) &&
         parcel.WriteUint32(static_cast<uint32_t>(rotation_)) &&
         parcel.WriteUint32(static_cast<uint32_t>(orientation_)) &&
-        parcel.WriteInt32(offsetX_) && parcel.WriteInt32(offsetY_);
+        parcel.WriteInt32(offsetX_) && parcel.WriteInt32(offsetY_) &&
+        parcel.WriteUint32(static_cast<uint32_t>(displayState_));
 }
 
 DisplayInfo *DisplayInfo::Unmarshalling(Parcel &parcel)
@@ -36,13 +37,16 @@ DisplayInfo *DisplayInfo::Unmarshalling(Parcel &parcel)
     uint32_t type = (uint32_t)DisplayType::DEFAULT;
     uint32_t rotation;
     uint32_t orientation;
-    bool res = parcel.ReadUint64(displayInfo->id_) && parcel.ReadUint32(type) &&
+    uint32_t displayState;
+    bool res = parcel.ReadString(displayInfo->name_) &&
+        parcel.ReadUint64(displayInfo->id_) && parcel.ReadUint32(type) &&
         parcel.ReadInt32(displayInfo->width_) && parcel.ReadInt32(displayInfo->height_) &&
         parcel.ReadUint32(displayInfo->refreshRate_) && parcel.ReadUint64(displayInfo->screenId_) &&
         parcel.ReadFloat(displayInfo->virtualPixelRatio_) &&
         parcel.ReadFloat(displayInfo->xDpi_) && parcel.ReadFloat(displayInfo->yDpi_) &&
         parcel.ReadUint32(rotation) && parcel.ReadUint32(orientation) &&
-        parcel.ReadInt32(displayInfo->offsetX_) && parcel.ReadInt32(displayInfo->offsetY_);
+        parcel.ReadInt32(displayInfo->offsetX_) && parcel.ReadInt32(displayInfo->offsetY_) &&
+        parcel.ReadUint32(displayState);
     if (!res) {
         delete displayInfo;
         return nullptr;
@@ -50,6 +54,7 @@ DisplayInfo *DisplayInfo::Unmarshalling(Parcel &parcel)
     displayInfo->type_ = (DisplayType)type;
     displayInfo->rotation_ = static_cast<Rotation>(rotation);
     displayInfo->orientation_ = static_cast<Orientation>(orientation);
+    displayInfo->displayState_ = static_cast<DisplayState>(displayState);
     return displayInfo;
 }
 } // namespace OHOS::Rosen

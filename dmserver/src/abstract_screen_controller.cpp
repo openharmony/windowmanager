@@ -15,6 +15,8 @@
 
 #include "abstract_screen_controller.h"
 
+#include <sstream>
+
 #include <cinttypes>
 #include <hitrace_meter.h>
 #include <screen_manager/rs_screen_mode_info.h>
@@ -276,8 +278,11 @@ void AbstractScreenController::ProcessScreenConnected(ScreenId rsScreenId)
 sptr<AbstractScreen> AbstractScreenController::InitAndGetScreen(ScreenId rsScreenId)
 {
     ScreenId dmsScreenId = screenIdManager_.CreateAndGetNewScreenId(rsScreenId);
+    std::ostringstream buffer;
+    buffer<<DEFAULT_SCREEN_NAME<<"_"<<dmsScreenId;
+    std::string name = buffer.str();
     sptr<AbstractScreen> absScreen =
-        new(std::nothrow) AbstractScreen(this, DEFAULT_SCREEN_NAME, dmsScreenId, rsScreenId);
+        new(std::nothrow) AbstractScreen(this, name, dmsScreenId, rsScreenId);
     if (absScreen == nullptr) {
         WLOGFE("new AbstractScreen failed.");
         screenIdManager_.DeleteScreenId(dmsScreenId);
@@ -421,8 +426,11 @@ bool AbstractScreenController::CheckScreenInScreenGroup(sptr<AbstractScreen> scr
 sptr<AbstractScreenGroup> AbstractScreenController::AddAsFirstScreenLocked(sptr<AbstractScreen> newScreen)
 {
     ScreenId dmsGroupScreenId = screenIdManager_.CreateAndGetNewScreenId(SCREEN_ID_INVALID);
+    std::ostringstream buffer;
+    buffer<<"ScreenGroup_"<<dmsGroupScreenId;
+    std::string name = buffer.str();
     sptr<AbstractScreenGroup> screenGroup = new(std::nothrow) AbstractScreenGroup(this, dmsGroupScreenId,
-        SCREEN_ID_INVALID, ScreenCombination::SCREEN_MIRROR);
+        SCREEN_ID_INVALID, name, ScreenCombination::SCREEN_MIRROR);
     if (screenGroup == nullptr) {
         WLOGE("new AbstractScreenGroup failed");
         screenIdManager_.DeleteScreenId(dmsGroupScreenId);
