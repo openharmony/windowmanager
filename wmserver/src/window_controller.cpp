@@ -824,7 +824,7 @@ WMError WindowController::UpdateProperty(sptr<WindowProperty>& property, Propert
             node->SetDragType(property->GetDragType());
             ret = ResizeRect(windowId, property->GetRequestRect(), property->GetWindowSizeChangeReason());
             if (node->GetWindowMode() == WindowMode::WINDOW_MODE_FLOATING && ret == WMError::WM_OK &&
-                callingWindowId_ != 0u && !WindowHelper::IsEmptyRect(callingWindowRestoringRect_)) {
+                callingWindowId_ == windowId && !WindowHelper::IsEmptyRect(callingWindowRestoringRect_)) {
                 if (property->GetWindowSizeChangeReason() != WindowSizeChangeReason::MOVE) {
                     callingWindowId_ = 0u;
                     callingWindowRestoringRect_ = { 0, 0, 0, 0 };
