@@ -294,6 +294,7 @@ private:
     }
     inline void NotifyBeforeDestroy(std::string windowName)
     {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
         if (uiContent_ != nullptr) {
             auto uiContent = std::move(uiContent_);
             uiContent_ = nullptr;
