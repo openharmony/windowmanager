@@ -60,6 +60,7 @@ void InputEventListener::OnInputEvent(std::shared_ptr<MMI::PointerEvent> pointer
     auto channel = InputTransferStation::GetInstance().GetInputChannel(windowId);
     if (channel == nullptr) {
         WLOGFE("WindowInputChannel is nullptr");
+        pointerEvent->MarkProcessed();
         return;
     }
     channel->HandlePointerEvent(pointerEvent);

@@ -2288,6 +2288,7 @@ void WindowImpl::ConsumePointerEvent(std::shared_ptr<MMI::PointerEvent>& pointer
         (void)uiContent_->ProcessPointerEvent(pointerEvent);
     } else {
         WLOGE("pointerEvent is not consumed, windowId: %{public}u", GetWindowId());
+        pointerEvent->MarkProcessed();
     }
 }
 
