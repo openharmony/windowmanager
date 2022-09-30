@@ -1839,7 +1839,11 @@ void WindowImpl::UpdateRect(const struct Rect& rect, bool decoStatus, WindowSize
     WLOGFD("sizeChange callback size: %{public}lu", (unsigned long)windowChangeListeners_.size());
 
     NotifySizeChange(rectToAce, reason);
-    if (uiContent_ != nullptr) {
+    {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        if (uiContent_ == nullptr) {
+            return;
+        }
         Ace::ViewportConfig config;
         WLOGFI("UpdateViewportConfig Id:%{public}u, windowRect:[%{public}d, %{public}d, %{public}u, %{public}u]",
             property_->GetWindowId(), rectToAce.posX_, rectToAce.posY_, rectToAce.width_, rectToAce.height_);
