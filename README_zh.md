@@ -1,3 +1,6 @@
+# 公告
+因OpenHarmony部件设计规范化需求，2022.9月起**windowmanager**仓库更名为**window_window_manager**，本仓库归档不再维护。请前往[window_window_manager](https://gitee.com/openharmony/window_window_manager)仓库，了解最新代码信息。
+
 # windowmanager
 
 -   [简介](#简介)
