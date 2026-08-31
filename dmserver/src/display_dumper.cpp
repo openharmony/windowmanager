@@ -15,6 +15,7 @@
 
 #include "display_dumper.h"
 
+#include <charconv>
 #include <cinttypes>
 #include <csignal>
 #include <iomanip>
@@ -116,15 +117,27 @@ DMError DisplayDumper::DumpInfo(const std::vector<std::string>& args, std::strin
     DumpType dumpType = DumpType::DUMP_NONE;
     ScreenId screenId = SCREEN_ID_INVALID;
     DisplayId displayId = DISPLAY_ID_INVALID;
+    uint64_t parsedId = 0;
+    auto parseId = [this](const std::string& idStr, uint64_t& id) {
+        if (!IsValidDigitString(idStr)) {
+            return false;
+        }
+        auto [ptr, ec] = std::from_chars(idStr.data(), idStr.data() + idStr.size(), id);
+        if (ec != std::errc{} || ptr != idStr.data() + idStr.size()) {
+            WLOGFE("invalid id");
+            return false;
+        }
+        return true;
+    };
     if (args.size() == 2 && args[0] == ARG_DUMP_SCREEN && args[1] == ARG_DUMP_ALL) { // 2: params num
         dumpType = DumpType::DUMP_ALL_SCREEN;
     } else if (args.size() == 2 && args[0] == ARG_DUMP_DISPLAY && args[1] == ARG_DUMP_ALL) { // 2: params num
         dumpType = DumpType::DUMP_ALL_DISPLAY;
-    } else if (args.size() == 2 && args[0] == ARG_DUMP_SCREEN && IsValidDigitString(args[1])) { // 2: params num
-        screenId = std::stoull(args[1]);
+    } else if (args.size() == 2 && args[0] == ARG_DUMP_SCREEN && parseId(args[1], parsedId)) { // 2: params num
+        screenId = parsedId;
         dumpType = DumpType::DUMP_SCREEN;
-    } else if (args.size() == 2 && args[0] == ARG_DUMP_DISPLAY && IsValidDigitString(args[1])) { // 2: params num
-        displayId = std::stoull(args[1]);
+    } else if (args.size() == 2 && args[0] == ARG_DUMP_DISPLAY && parseId(args[1], parsedId)) { // 2: params num
+        displayId = parsedId;
         dumpType = DumpType::DUMP_DISPLAY;
     } else {
         // do nothing
